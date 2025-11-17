@@ -39,7 +39,7 @@ flutter pub get
 
 # Build for web with optimizations
 echo "🏗️  Building Flutter web app (release mode)..."
-flutter build web --release --web-renderer canvaskit
+flutter build web --release
 
 echo "✅ Build complete! Output in build/web"
 
