@@ -1,7 +1,12 @@
 #!/bin/bash
 set -e
 
+# Get the project root directory (where vercel.json is located)
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$PROJECT_ROOT"
+
 echo "🚀 Starting Vercel build for Flutter web app..."
+echo "📁 Project root: $PROJECT_ROOT"
 
 # Install Flutter SDK
 echo "📦 Installing Flutter SDK..."
@@ -14,12 +19,16 @@ if [ ! -d "$FLUTTER_SDK_PATH" ]; then
   cd $FLUTTER_SDK_PATH
   git fetch --depth 1 origin stable
   git checkout stable
+  cd "$PROJECT_ROOT"
 else
   echo "Flutter SDK already exists, using cached version"
 fi
 
 # Add Flutter to PATH
 export PATH="$FLUTTER_SDK_PATH/bin:$PATH"
+
+# Ensure we're in the project root
+cd "$PROJECT_ROOT"
 
 # Precache web dependencies to speed up build
 echo "📦 Precaching Flutter web dependencies..."
@@ -32,6 +41,16 @@ flutter --version
 # Enable web support (idempotent)
 echo "🌐 Enabling web support..."
 flutter config --enable-web --no-analytics
+
+# Verify we're in the right directory and main.dart exists
+echo "🔍 Verifying project structure..."
+if [ ! -f "lib/main.dart" ]; then
+  echo "❌ Error: lib/main.dart not found in current directory: $(pwd)"
+  echo "📂 Directory contents:"
+  ls -la
+  exit 1
+fi
+echo "✅ Found lib/main.dart"
 
 # Get dependencies
 echo "📚 Getting Flutter dependencies..."
