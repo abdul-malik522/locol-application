@@ -20,7 +20,6 @@ class ProfileScreen extends ConsumerWidget {
     final currentUser = ref.watch(currentUserProvider);
     final postsState = ref.watch(postsProvider);
     final ordersState = ref.watch(ordersProvider);
-    final aboutTab = _buildAboutTab(context, ref);
 
     if (currentUser == null) {
       return const Scaffold(
@@ -54,7 +53,7 @@ class ProfileScreen extends ConsumerWidget {
             child: _buildActionButtons(context),
           ),
           SliverToBoxAdapter(
-            child: _buildTabs(context),
+            child: _buildTabs(context, ref),
           ),
           if (userPosts.isEmpty)
             SliverFillRemaining(
@@ -315,7 +314,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTabs(BuildContext context) {
+  Widget _buildTabs(BuildContext context, WidgetRef ref) {
     return DefaultTabController(
       length: 3,
       child: Column(
@@ -333,7 +332,7 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 const Center(child: Text('Posts tab - shown above')),
                 const Center(child: Text('Reviews coming soon')),
-                aboutTab,
+                _buildAboutTab(context, ref),
               ],
             ),
           ),
