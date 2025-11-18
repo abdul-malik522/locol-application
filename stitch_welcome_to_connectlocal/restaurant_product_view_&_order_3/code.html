@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Profile &amp; Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#2E7D32",
+            "secondary": "#FF8F00",
+            "background-light": "#F9F9F9",
+            "background-dark": "#121212",
+            "text-light": "#333333",
+            "text-dark": "#E0E0E0",
+            "divider-light": "#E0E0E0",
+            "divider-dark": "#424242",
+            "card-light": "#FFFFFF",
+            "card-dark": "#1E1E1E",
+          },
+          fontFamily: {
+            "display": ["Plus Jakarta Sans", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "0.75rem",
+            "xl": "1rem",
+            "full": "9999px",
+          },
+        },
+      },
+    };
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
+<div class="relative min-h-screen w-full flex-col overflow-x-hidden group/design-root">
+<div class="sticky top-0 z-20 flex items-center justify-between bg-background-light/80 dark:bg-background-dark/80 p-4 pb-2 backdrop-blur-sm">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full bg-card-light dark:bg-card-dark border border-divider-light dark:border-divider-dark">
+<span class="material-symbols-outlined text-text-light dark:text-text-dark">arrow_back</span>
+</button>
+<h2 class="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-text-light dark:text-text-dark">Profile &amp; Settings</h2>
+<div class="w-10"></div>
+</div>
+<main class="pb-32 px-4">
+<div class="pt-6 flex flex-col items-center">
+<div class="relative">
+<img alt="Profile picture of a chef in a kitchen" class="size-24 rounded-full object-cover border-4 border-card-light dark:border-card-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-Qwfx2TFihbkspXki4Ws1E3Z1RjVWBE4GIOQCWOhVdTOLKrGmto9U7YV5PgT6W1b2YsY68ezOD9gJRuarh8rlhwotx0Sl45NA-PRaUOhMow8CoS-4R8vnxZJIilh1I1M2w_XX9vQUSegqGLO1b0qQzwty90B_FrE1vv09_18Rz-8SLcg-Wv7l9HYfaIrw7IvytfX3oZC43lYSWYu_R9nMqPLmD_1OMgAmaXLnvg3ldc9dEeVp8xT_sePQV6aqnqrEOK_UwW-Xcw"/>
+<button class="absolute bottom-0 right-0 flex size-8 items-center justify-center rounded-full bg-primary text-white border-2 border-card-light dark:border-card-dark">
+<span class="material-symbols-outlined text-base">edit</span>
+</button>
+</div>
+<h1 class="mt-4 text-2xl font-bold">Chef Maria Rodriguez</h1>
+<p class="mt-1 text-text-light/80 dark:text-text-dark/80">maria.rodriguez@example.com</p>
+</div>
+<div class="mt-8 space-y-4">
+<div class="rounded-xl bg-card-light dark:bg-card-dark border border-divider-light dark:border-divider-dark overflow-hidden">
+<a class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">account_circle</span>
+<span class="font-medium">Account Information</span>
+</div>
+<span class="material-symbols-outlined text-text-light/50 dark:text-text-dark/50">chevron_right</span>
+</a>
+<div class="mx-4 border-b border-divider-light dark:border-divider-dark"></div>
+<a class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">history</span>
+<span class="font-medium">My Activity</span>
+</div>
+<span class="material-symbols-outlined text-text-light/50 dark:text-text-dark/50">chevron_right</span>
+</a>
+<div class="mx-4 border-b border-divider-light dark:border-divider-dark"></div>
+<a class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">notifications</span>
+<span class="font-medium">Notification Preferences</span>
+</div>
+<span class="material-symbols-outlined text-text-light/50 dark:text-text-dark/50">chevron_right</span>
+</a>
+</div>
+<div class="rounded-xl bg-card-light dark:bg-card-dark border border-divider-light dark:border-divider-dark overflow-hidden">
+<a class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">security</span>
+<span class="font-medium">Security</span>
+</div>
+<span class="material-symbols-outlined text-text-light/50 dark:text-text-dark/50">chevron_right</span>
+</a>
+<div class="mx-4 border-b border-divider-light dark:border-divider-dark"></div>
+<a class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">language</span>
+<span class="font-medium">Language</span>
+</div>
+<span class="material-symbols-outlined text-text-light/50 dark:text-text-dark/50">chevron_right</span>
+</a>
+<div class="mx-4 border-b border-divider-light dark:border-divider-dark"></div>
+<a class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">dark_mode</span>
+<span class="font-medium">Dark Mode</span>
+</div>
+<label class="relative inline-flex cursor-pointer items-center">
+<input checked="" class="peer sr-only" type="checkbox" value=""/>
+<div class="peer h-6 w-11 rounded-full bg-divider-light after:absolute after:top-0.5 after:start-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-4 peer-focus:ring-green-300 dark:border-gray-600 dark:bg-divider-dark dark:peer-focus:ring-green-800"></div>
+</label>
+</a>
+</div>
+<div class="rounded-xl bg-card-light dark:bg-card-dark border border-divider-light dark:border-divider-dark overflow-hidden">
+<a class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">help</span>
+<span class="font-medium">Help &amp; Support</span>
+</div>
+<span class="material-symbols-outlined text-text-light/50 dark:text-text-dark/50">chevron_right</span>
+</a>
+<div class="mx-4 border-b border-divider-light dark:border-divider-dark"></div>
+<a class="flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">info</span>
+<span class="font-medium">About</span>
+</div>
+<span class="material-symbols-outlined text-text-light/50 dark:text-text-dark/50">chevron_right</span>
+</a>
+</div>
+<div class="pt-4">
+<button class="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-red-500/10 text-base font-bold text-red-600 dark:text-red-400">
+<span class="material-symbols-outlined">logout</span>
+<span>Log Out</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

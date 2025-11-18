@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Help &amp; Support</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#4CAF50",
+                        "background-light": "#F7F7F7",
+                        "background-dark": "#121212",
+                        "text-light": "#333333",
+                        "text-dark": "#E0E0E0",
+                        "border-light": "#E0E0E0",
+                        "border-dark": "#333333",
+                        "surface-light": "#FFFFFF",
+                        "surface-dark": "#1E1E1E",
+                        "error": "#D32F2F",
+                    },
+                    fontFamily: {
+                        display: ["Plus Jakarta Sans", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                        lg: "0.75rem",
+                        xl: "1rem",
+                        full: "9999px",
+                    },
+                },
+            },
+        };
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                "FILL" 0,
+                "wght" 400,
+                "GRAD" 0,
+                "opsz" 24;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="flex items-center p-4 pb-3 bg-background-light dark:bg-background-dark sticky top-0 z-10 border-b border-border-light dark:border-border-dark">
+<div class="flex size-10 shrink-0 items-center justify-start">
+<span class="material-symbols-outlined text-text-light dark:text-text-dark text-2xl">arrow_back</span>
+</div>
+<h1 class="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-text-light dark:text-text-dark">Help &amp; Support</h1>
+<div class="size-10 shrink-0"></div>
+</div>
+<div class="flex-1 space-y-6 p-4">
+<a class="group" href="#">
+<div class="flex items-center justify-between gap-4 rounded-xl bg-surface-light p-4 shadow-sm transition-all active:bg-primary/10 dark:bg-surface-dark dark:shadow-none">
+<div class="flex items-center gap-4">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/20">
+<span class="material-symbols-outlined text-primary text-2xl">quiz</span>
+</div>
+<div>
+<p class="text-base font-medium leading-normal">Frequently Asked Questions</p>
+<p class="text-sm text-text-light/60 dark:text-text-dark/60">Find answers to common questions</p>
+</div>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-text-light/50 dark:text-text-dark/50 text-xl">arrow_forward_ios</span>
+</div>
+</div>
+</a>
+<div>
+<h2 class="px-4 pb-2 pt-2 text-base font-semibold text-text-light/70 dark:text-text-dark/70">Contact Us</h2>
+<div class="flex flex-col gap-px overflow-hidden rounded-xl bg-border-light shadow-sm dark:bg-border-dark dark:shadow-none">
+<a class="flex cursor-pointer items-center justify-between gap-4 bg-surface-light p-4 transition-all active:bg-primary/10 dark:bg-surface-dark" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-text-light/80 dark:text-text-dark/80">mail</span>
+<p class="text-base font-normal leading-normal">Send us an Email</p>
+</div>
+<span class="material-symbols-outlined text-text-light/50 dark:text-text-dark/50 text-xl">arrow_forward_ios</span>
+</a>
+<a class="flex cursor-pointer items-center justify-between gap-4 bg-surface-light p-4 transition-all active:bg-primary/10 dark:bg-surface-dark" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-text-light/80 dark:text-text-dark/80">call</span>
+<p class="text-base font-normal leading-normal">Call Us</p>
+</div>
+<span class="material-symbols-outlined text-text-light/50 dark:text-text-dark/50 text-xl">arrow_forward_ios</span>
+</a>
+<a class="flex cursor-pointer items-center justify-between gap-4 bg-surface-light p-4 transition-all active:bg-primary/10 dark:bg-surface-dark" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-text-light/80 dark:text-text-dark/80">chat_bubble</span>
+<p class="text-base font-normal leading-normal">In-App Chat</p>
+</div>
+<span class="material-symbols-outlined text-text-light/50 dark:text-text-dark/50 text-xl">arrow_forward_ios</span>
+</a>
+</div>
+</div>
+<a class="group" href="#">
+<div class="flex items-center justify-between gap-4 rounded-xl bg-surface-light p-4 shadow-sm transition-all active:bg-error/10 dark:bg-surface-dark dark:shadow-none">
+<div class="flex items-center gap-4">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-error/20">
+<span class="material-symbols-outlined text-error text-2xl">flag</span>
+</div>
+<div>
+<p class="text-base font-medium leading-normal text-error">Report a Problem</p>
+<p class="text-sm text-text-light/60 dark:text-text-dark/60">Let us know about a bug or issue</p>
+</div>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-text-light/50 dark:text-text-dark/50 text-xl">arrow_forward_ios</span>
+</div>
+</div>
+</a>
+</div>
+</div>
+
+</body></html>

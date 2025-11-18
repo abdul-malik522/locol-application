@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Contact Us</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13ec13",
+            "background-light": "#F8F9FA",
+            "background-dark": "#102210",
+            "blue-primary": "#2C3E50",
+            "green-secondary": "#27AE60",
+          },
+          fontFamily: {
+            "display": ["Plus Jakarta Sans"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<!-- Top App Bar -->
+<header class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10 border-b border-gray-200 dark:border-gray-800">
+<div class="flex size-10 shrink-0 items-center justify-center">
+<span class="material-symbols-outlined text-blue-primary dark:text-gray-100">arrow_back</span>
+</div>
+<h1 class="text-blue-primary dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">Contact Us</h1>
+</header>
+<main class="flex-1 px-4 py-6">
+<!-- Introductory Text -->
+<p class="text-gray-600 dark:text-gray-300 text-base font-normal leading-normal pb-6">How can we help you? Choose an option below to get in touch with our team.</p>
+<!-- Contact Options List -->
+<div class="flex flex-col gap-4">
+<!-- Email Support Card -->
+<a class="flex items-center gap-4 bg-white dark:bg-gray-800 p-4 min-h-[72px] justify-between rounded-xl shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" href="mailto:support@example.com">
+<div class="flex items-center gap-4">
+<div class="text-blue-primary dark:text-green-secondary flex items-center justify-center rounded-lg bg-blue-primary/10 dark:bg-green-secondary/20 shrink-0 size-12">
+<span class="material-symbols-outlined">mail</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-blue-primary dark:text-white text-base font-medium leading-normal line-clamp-1">Email Support</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm font-normal leading-normal line-clamp-2">Response within 24 hours.</p>
+</div>
+</div>
+<div class="shrink-0">
+<div class="text-gray-400 dark:text-gray-500 flex size-7 items-center justify-center">
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</div>
+</a>
+<!-- Call Us Card -->
+<a class="flex items-center gap-4 bg-white dark:bg-gray-800 p-4 min-h-[72px] justify-between rounded-xl shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" href="tel:+1234567890">
+<div class="flex items-center gap-4">
+<div class="text-blue-primary dark:text-green-secondary flex items-center justify-center rounded-lg bg-blue-primary/10 dark:bg-green-secondary/20 shrink-0 size-12">
+<span class="material-symbols-outlined">call</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-blue-primary dark:text-white text-base font-medium leading-normal line-clamp-1">Call Us</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm font-normal leading-normal line-clamp-2">Mon-Fri, 9am-5pm</p>
+</div>
+</div>
+<div class="shrink-0">
+<div class="text-gray-400 dark:text-gray-500 flex size-7 items-center justify-center">
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</div>
+</a>
+<!-- In-App Message Card -->
+<a class="flex items-center gap-4 bg-white dark:bg-gray-800 p-4 min-h-[72px] justify-between rounded-xl shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" href="#">
+<div class="flex items-center gap-4">
+<div class="text-blue-primary dark:text-green-secondary flex items-center justify-center rounded-lg bg-blue-primary/10 dark:bg-green-secondary/20 shrink-0 size-12">
+<span class="material-symbols-outlined">chat_bubble</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-blue-primary dark:text-white text-base font-medium leading-normal line-clamp-1">In-App Message</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm font-normal leading-normal line-clamp-2">Start a conversation with our team.</p>
+</div>
+</div>
+<div class="shrink-0">
+<div class="text-gray-400 dark:text-gray-500 flex size-7 items-center justify-center">
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</div>
+</a>
+</div>
+</main>
+<!-- Footer Link -->
+<footer class="p-4 mt-auto">
+<div class="text-center">
+<a class="text-green-secondary dark:text-primary font-medium text-sm hover:underline" href="#">
+          Visit our FAQ &amp; Help Center
+        </a>
+</div>
+</footer>
+</div>
+</body></html>

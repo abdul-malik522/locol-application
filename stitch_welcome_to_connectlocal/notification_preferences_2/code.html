@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Notification Preferences</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4CAF50",
+                        "background-light": "#F7F7F7",
+                        "background-dark": "#121212",
+                        "text-light": "#333333",
+                        "text-dark": "#E0E0E0",
+                        "border-light": "#E0E0E0",
+                        "border-dark": "#333333",
+                        "surface-light": "#FFFFFF",
+                        "surface-dark": "#1E1E1E",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "full": "9999px",
+                    },
+                },
+            },
+        };
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<!-- Top App Bar -->
+<div class="flex items-center p-4 pb-3 bg-background-light dark:bg-background-dark sticky top-0 z-10 border-b border-border-light dark:border-border-dark">
+<div class="flex size-10 shrink-0 items-center justify-start">
+<span class="material-symbols-outlined text-text-light dark:text-text-dark text-2xl">arrow_back</span>
+</div>
+<h1 class="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-text-light dark:text-text-dark">Notification Preferences</h1>
+<div class="size-10 shrink-0"></div> <!-- Spacer for centering title -->
+</div>
+<div class="flex-1 space-y-4 p-4">
+<!-- Master Toggle -->
+<div class="flex items-center justify-between gap-4 p-4 min-h-14 bg-surface-light dark:bg-surface-dark rounded-xl">
+<div class="flex items-center gap-4">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/20">
+<span class="material-symbols-outlined text-primary text-2xl">notifications</span>
+</div>
+<p class="text-base font-medium leading-normal">Allow All Notifications</p>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-border-light dark:bg-border-dark p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white transition-transform" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 8px, rgba(0, 0, 0, 0.04) 0px 3px 1px;"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- Section: Order-Related Notifications -->
+<div>
+<h2 class="px-4 pb-2 pt-4 text-base font-semibold text-text-light/70 dark:text-text-dark/70">Order-Related</h2>
+<div class="flex flex-col gap-px overflow-hidden rounded-xl bg-border-light dark:bg-border-dark">
+<div class="flex items-center justify-between gap-4 p-4 min-h-14 bg-surface-light dark:bg-surface-dark">
+<p class="text-base font-normal leading-normal">New Chat Messages</p>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-border-light dark:bg-border-dark p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white transition-transform" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 8px, rgba(0, 0, 0, 0.04) 0px 3px 1px;"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<div class="flex items-center justify-between gap-4 p-4 min-h-14 bg-surface-light dark:bg-surface-dark">
+<p class="text-base font-normal leading-normal">Order Placed</p>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-border-light dark:bg-border-dark p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white transition-transform" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 8px, rgba(0, 0, 0, 0.04) 0px 3px 1px;"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<div class="flex items-center justify-between gap-4 p-4 min-h-14 bg-surface-light dark:bg-surface-dark">
+<p class="text-base font-normal leading-normal">Order Status Updates</p>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-border-light dark:bg-border-dark p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white transition-transform" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 8px, rgba(0, 0, 0, 0.04) 0px 3px 1px;"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: General Notifications -->
+<div>
+<h2 class="px-4 pb-2 pt-4 text-base font-semibold text-text-light/70 dark:text-text-dark/70">General</h2>
+<div class="flex flex-col gap-px overflow-hidden rounded-xl bg-border-light dark:bg-border-dark">
+<div class="flex items-center justify-between gap-4 p-4 min-h-14 bg-surface-light dark:bg-surface-dark">
+<p class="text-base font-normal leading-normal">Promotional Offers &amp; News</p>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-border-light dark:bg-border-dark p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white transition-transform" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 8px, rgba(0, 0, 0, 0.04) 0px 3px 1px;"></div>
+<input class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<div class="flex items-center justify-between gap-4 p-4 min-h-14 bg-surface-light dark:bg-surface-dark">
+<p class="text-base font-normal leading-normal">App Updates</p>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-border-light dark:bg-border-dark p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white transition-transform" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 8px, rgba(0, 0, 0, 0.04) 0px 3px 1px;"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: Alert Style -->
+<div>
+<h2 class="px-4 pb-2 pt-4 text-base font-semibold text-text-light/70 dark:text-text-dark/70">Alert Style</h2>
+<div class="flex flex-col gap-px overflow-hidden rounded-xl bg-border-light dark:bg-border-dark">
+<div class="flex cursor-pointer items-center justify-between gap-4 p-4 min-h-14 bg-surface-light dark:bg-surface-dark active:bg-primary/10">
+<p class="text-base font-normal leading-normal">Notification Sound</p>
+<div class="flex items-center gap-2">
+<span class="text-sm text-text-light/60 dark:text-text-dark/60">Default</span>
+<span class="material-symbols-outlined text-text-light/50 dark:text-text-dark/50 text-xl">arrow_forward_ios</span>
+</div>
+</div>
+<div class="flex items-center justify-between gap-4 p-4 min-h-14 bg-surface-light dark:bg-surface-dark">
+<p class="text-base font-normal leading-normal">Vibrate</p>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-border-light dark:bg-border-dark p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white transition-transform" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 8px, rgba(0, 0, 0, 0.04) 0px 3px 1px;"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

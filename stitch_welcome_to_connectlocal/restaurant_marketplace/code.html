@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Discover Fresh Ingredients</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#556B2F",
+              "background-light": "#F8F8F8",
+              "background-dark": "#102210",
+              "text-light": "#333333",
+              "text-dark": "#E5E5E5",
+              "text-subtle-light": "#556B2F",
+              "text-subtle-dark": "#a3b88c",
+              "surface-light": "#E5E5E5",
+              "surface-dark": "#2F4F4F",
+              "accent": "#D2691E",
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="flex items-center p-4 pb-2 justify-between text-text-light dark:text-text-dark">
+<div class="flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined text-3xl">local_florist</span>
+</div>
+<h1 class="text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Discover</h1>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 w-10 bg-transparent text-text-light dark:text-text-dark gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
+<span class="material-symbols-outlined text-3xl">account_circle</span>
+</button>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="px-4 py-3">
+<label class="flex flex-col min-w-40 h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-text-subtle-light dark:text-text-subtle-dark flex border-none bg-surface-light dark:bg-surface-dark items-center justify-center pl-4 rounded-l-lg border-r-0">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light dark:text-text-dark focus:outline-0 focus:ring-0 border-none bg-surface-light dark:bg-surface-dark focus:border-none h-full placeholder:text-text-subtle-light dark:placeholder:text-text-subtle-dark px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal" placeholder="Search ingredients (e.g., 'heirloom tomatoes')" value=""/>
+</div>
+</label>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-2 p-4 pt-1 overflow-x-auto whitespace-nowrap scrollbar-hide">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary pl-4 pr-4 text-white dark:text-text-light">
+<p class="text-sm font-medium leading-normal">Under 5km</p>
+<span class="material-symbols-outlined text-lg">expand_more</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-surface-light dark:bg-surface-dark pl-4 pr-4 text-text-light dark:text-text-dark">
+<p class="text-sm font-medium leading-normal">Vegetables</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-surface-light dark:bg-surface-dark pl-4 pr-4 text-text-light dark:text-text-dark">
+<p class="text-sm font-medium leading-normal">Dairy</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-surface-light dark:bg-surface-dark pl-4 pr-4 text-text-light dark:text-text-dark">
+<p class="text-sm font-medium leading-normal">Meat</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-surface-light dark:bg-surface-dark pl-3 pr-3 text-text-light dark:text-text-dark">
+<span class="material-symbols-outlined text-lg">swap_vert</span>
+<p class="text-sm font-medium leading-normal">Sort By</p>
+</button>
+</div>
+</header>
+<!-- Product Image Grid -->
+<main class="flex-grow">
+<div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-4 p-4">
+<div class="flex flex-col gap-2 pb-3">
+<div class="relative w-full">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl" data-alt="A vibrant pile of red Organic Roma Tomatoes" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDIXaZc0d6u0vz3QFqxNuc6V3T8ILJdtiWGtbUEWb54-FZBvDdx5Dg2WXPVSmNVfBqkS35em1_-mDmG1YQCtw7dlMVoz5Y4V9Xkkg09P6SjwvXxOBlfMULNFZMBC29_Oxjs6E7UA_fjOwBsyynKT-7zuhOPX4znfzZKMkjddNuZ53wBAJxZlaNh7qAZjoMVbKb6X4mh5H3cF5z_RD9Lo5VEx5vDFCu_G9pP3qdVqbeuIpYKQSGMcdcaDr1cBXYXYpFd1eeX87myxQ");'></div>
+<div class="absolute top-2 left-2 rounded bg-accent px-2 py-0.5">
+<p class="text-xs font-bold text-white">Organic</p>
+</div>
+</div>
+<div>
+<p class="text-text-light dark:text-text-dark text-base font-bold leading-normal">Organic Roma Tomatoes</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm font-normal leading-normal">Green Acre Farms</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm font-normal leading-normal">$5.99 / kg · 3.2km</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 pb-3">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl" data-alt="A large ball of fresh mozzarella cheese on a wooden board" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBAqPsS2x8gYorKV8SM4_b6uLRYnFy0vhcKLEf2sLZG_zsvu4M8HBOPFYJNPmQUdRuXDhTCLOlts-HW-7_1WlU4vMmfzemP1X5Dl-MKlRNCQQJA1Ir_1HFkWSJrDXC8NAnZhTAerY5-r2G1Kaq7n6dTo2oSTGkHC1rqNLvLEE7Pj7yXDGRU2_1RBfVQoMjLm_XZo0WDj8zzBDWPTziuKz9X2ZboUlgSicf6Io8SJALRHf5ZHgoSOF00LwJgfOR8L2tL4eOh_70heA");'></div>
+<div>
+<p class="text-text-light dark:text-text-dark text-base font-bold leading-normal">Fresh Mozzarella</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm font-normal leading-normal">The Italian Dairy</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm font-normal leading-normal">$12.00 / kg · 4.5km</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 pb-3">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl" data-alt="A freshly baked loaf of artisanal sourdough bread" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA1K6WygBsJYhJvbvUiyztBpAeolz-vqQIiXSO2nanyzyDPqY_X7MVQG97M6tDZ8oiHMjIFzjR8a3Zgrg4Q84ssxM48W0MJy9KtxMUF7pUYWY9oU-CqN9KupDiikBZTJ1KERnrxJDtq4-MW_kYMLA45UXAd62K5T57KdhUkznhcJYscHjZYA0p448wvFEfbzr8DIeZUjOG0W0UqBVRWWP3wUKyiHmkinUml1-BpqsV9b2GUjKwgxWNfJunUYY7Jg86KZiTPBoXyKg");'></div>
+<div>
+<p class="text-text-light dark:text-text-dark text-base font-bold leading-normal">Artisanal Sourdough</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm font-normal leading-normal">Daily Bread Co.</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm font-normal leading-normal">$8.00 / loaf · 1.8km</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 pb-3">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl" data-alt="A carton of brown and white pasture-raised eggs" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDyTsh5ezphmlOSqUJefe_JENa_oWlsEWAIfiWxHUoGGE4XG4X0DTNCGd9MAW3q4NkpGt2oG6FJMfZ0iq1S1BEXIG2YZCVxo8S_DDPECkEffF_ycTelEkyoCBZ8qd3sfdR6HqmkS3CNZkC4mu2kJT2Wxuc4BhKPgXYtiFxJyk9RR8ox7mrEiJp4g8ui2p4_CuynEHM2hhLvXTNarY7zoJ1Kegweo3NDP6hZtUYMNwJmMYgxmg7EHbRjv6DkARs2lDsr9_fEjEHEhA");'></div>
+<div>
+<p class="text-text-light dark:text-text-dark text-base font-bold leading-normal">Pasture-Raised Eggs</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm font-normal leading-normal">Sunny Meadow Farm</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm font-normal leading-normal">$6.50 / dozen · 7.1km</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 pb-3">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl" data-alt="A bundle of crisp, green asparagus spears" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCBagYhYCvGks92I7SXPbEL41qJBkH7M9_pxJDYqCAhVKlnsMbs5AUocz9kdA2Noqo28diKmO245wbr7NwtnsgfXobE_7TjYkxwSt4nCWUIyjmv2yyk9714_PgqOyKGkmwXCq_z-iDdmPGf6PHZBnP2LXgfGocgvJClBJOzr71p-Rn4QJ5sAO02U-frNvNk_qG5HqkOZ84EMX-eshdwGjwtbeF4bJgp_Qi2xMN1eJiXYlnoX5afhduEbOyObak1fQEGt2YWf78SsQ");'></div>
+<div>
+<p class="text-text-light dark:text-text-dark text-base font-bold leading-normal">Green Asparagus</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm font-normal leading-normal">Valley Produce</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm font-normal leading-normal">$7.50 / bunch · 2.5km</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 pb-3">
+<div class="relative w-full">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl" data-alt="Golden honey in a jar with a dipper" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAVvhub79VNNMmzxWyb2Jv10aRzJVs0p7k_kVIul0NCMJVZ7_CwBbHDD7pFT7okdfi2nEQoJFRhPAd0Lomo236crU5LPJFBjlGP1uWaZH8MA1zmC6pwsjwxcz5ycvjCOa4C6qYtOWn8l85fIgqaHQ8CsJCvBa-covzV2YclrsTeOegKwTNfRh-Kr81Q3sPz8heIN3RbJXX12zK1nt4C77zgfr9M7Em85O5r5QMktC8H6KOxLsBqgYx6JvgN-GdkRPOPgh-rUVW3BQ");'></div>
+<div class="absolute top-2 left-2 rounded bg-accent px-2 py-0.5">
+<p class="text-xs font-bold text-white">Local</p>
+</div>
+</div>
+<div>
+<p class="text-text-light dark:text-text-dark text-base font-bold leading-normal">Wildflower Honey</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm font-normal leading-normal">Beekeeper's Best</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm font-normal leading-normal">$15.00 / jar · 11.4km</p>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB -->
+<div class="sticky bottom-0 right-0 flex justify-end overflow-hidden px-5 py-5 pointer-events-none">
+<div class="pointer-events-auto">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 bg-primary text-white shadow-lg dark:text-text-light text-base font-bold leading-normal tracking-[0.015em] min-w-0 gap-3 pl-5 pr-6">
+<span class="material-symbols-outlined">map</span>
+<span class="truncate">Map View</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

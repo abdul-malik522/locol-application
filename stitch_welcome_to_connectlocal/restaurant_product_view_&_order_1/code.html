@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Product Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2E7D32",
+                        "secondary": "#FF8F00",
+                        "background-light": "#F9F9F9",
+                        "background-dark": "#121212",
+                        "text-light": "#333333",
+                        "text-dark": "#E0E0E0",
+                        "divider-light": "#E0E0E0",
+                        "divider-dark": "#424242",
+                        "card-light": "#FFFFFF",
+                        "card-dark": "#1E1E1E",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "full": "9999px",
+                    },
+                },
+            },
+        };
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
+<div class="relative min-h-screen w-full flex-col overflow-x-hidden group/design-root">
+<!-- Top App Bar -->
+<div class="sticky top-0 z-20 flex items-center justify-between bg-background-light/80 dark:bg-background-dark/80 p-4 pb-2 backdrop-blur-sm">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full bg-card-light dark:bg-card-dark border border-divider-light dark:border-divider-dark">
+<span class="material-symbols-outlined text-text-light dark:text-text-dark">arrow_back</span>
+</button>
+<h2 class="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-text-light dark:text-text-dark">Product Details</h2>
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full bg-card-light dark:bg-card-dark border border-divider-light dark:border-divider-dark">
+<span class="material-symbols-outlined text-text-light dark:text-text-dark">favorite_border</span>
+</button>
+</div>
+<main class="pb-32">
+<!-- Header Image Carousel -->
+<div class="@container px-4">
+<div class="bg-cover bg-center flex min-h-80 flex-col justify-end overflow-hidden rounded-xl" data-alt="Close up shot of fresh, vibrant red Roma tomatoes on a rustic wooden surface" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 40%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuARKlEzM30cq3iGDjK40QNJipR1kGsM0Ckvr_gx3mGhX-r5FkUNXWLbOPiU6s7YLs1KCduP7krTXTHyCe6qz4-s3Dw7W67xtgJa_Zsydmam5efJvRZ-LX7mnS-fIqA0f9pcciAdytiTF77gTg8vAiNNB3o65XsiF1xauyObuvsVBKjRghjJxMxZy-DHWwi3AZM1yT8GUTSlLQk0ak27enIG4S-Eq1IfWYmZEjHTC_zwU5LpjUOrFj6P5U_J4ZypbScTo2RQKTndCQ");'>
+<div class="flex justify-center gap-2 p-5">
+<div class="h-2 w-6 rounded-full bg-white"></div>
+<div class="h-2 w-2 rounded-full bg-white/50"></div>
+<div class="h-2 w-2 rounded-full bg-white/50"></div>
+<div class="h-2 w-2 rounded-full bg-white/50"></div>
+</div>
+</div>
+</div>
+<!-- Product Header -->
+<div class="px-4">
+<h1 class="pt-6 text-3xl font-bold leading-tight tracking-tight text-text-light dark:text-text-dark">Organic Roma Tomatoes</h1>
+<p class="pt-1 pb-3 text-base font-normal leading-normal text-text-light/80 dark:text-text-dark/80">Grade A, locally sourced from Green Valley Farms. Perfect for sauces and salads.</p>
+</div>
+<!-- Chips / Trust Signals -->
+<div class="flex gap-3 px-4 pt-2 pb-4 flex-wrap">
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary/20 px-3">
+<span class="material-symbols-outlined text-primary text-base">eco</span>
+<p class="text-sm font-medium leading-normal text-primary">Organic</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary/20 px-3">
+<span class="material-symbols-outlined text-primary text-base">genetics</span>
+<p class="text-sm font-medium leading-normal text-primary">Non-GMO</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary/20 px-3">
+<span class="material-symbols-outlined text-primary text-base">local_florist</span>
+<p class="text-sm font-medium leading-normal text-primary">Locally Sourced</p>
+</div>
+</div>
+<!-- Price & Unit Selector -->
+<div class="px-4 py-4">
+<div class="flex items-center justify-between">
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-bold text-primary">$3.99</p>
+<p class="text-text-light/70 dark:text-text-dark/70">/ kg</p>
+</div>
+<div class="flex items-center gap-3 rounded-full bg-card-light dark:bg-card-dark p-1 border border-divider-light dark:border-divider-dark">
+<button class="flex size-8 items-center justify-center rounded-full text-primary">
+<span class="material-symbols-outlined text-2xl">remove</span>
+</button>
+<input class="w-10 border-0 bg-transparent text-center text-lg font-bold p-0 text-text-light dark:text-text-dark focus:ring-0" type="text" value="1"/>
+<button class="flex size-8 items-center justify-center rounded-full bg-primary text-white">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+</div>
+</div>
+<p class="mt-2 text-sm text-secondary font-medium">10% discount on orders over 50kg</p>
+</div>
+<div class="my-4 border-b border-divider-light dark:border-divider-dark"></div>
+<!-- Accordion Sections -->
+<div class="space-y-2 px-4">
+<details class="group rounded-lg bg-card-light dark:bg-card-dark p-4 border border-divider-light dark:border-divider-dark" open="">
+<summary class="flex cursor-pointer list-none items-center justify-between">
+<span class="text-base font-bold">Description</span>
+<span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<p class="mt-3 text-sm text-text-light/80 dark:text-text-dark/80">Our Grade A Organic Roma Tomatoes are sourced directly from Green Valley Farms. Known for their rich, deep flavor and firm texture, they are the perfect choice for creating authentic Italian sauces, vibrant salsas, and fresh, crisp salads. Harvested at peak ripeness to ensure maximum taste and nutritional value.</p>
+</details>
+<details class="group rounded-lg bg-card-light dark:bg-card-dark p-4 border border-divider-light dark:border-divider-dark">
+<summary class="flex cursor-pointer list-none items-center justify-between">
+<span class="text-base font-bold">Nutritional Info</span>
+<span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<p class="mt-3 text-sm text-text-light/80 dark:text-text-dark/80">Serving Size: 100g. Calories: 18. Rich in Vitamin C, Potassium, and antioxidants like Lycopene.</p>
+</details>
+<details class="group rounded-lg bg-card-light dark:bg-card-dark p-4 border border-divider-light dark:border-divider-dark">
+<summary class="flex cursor-pointer list-none items-center justify-between">
+<span class="text-base font-bold">Origin &amp; Delivery</span>
+<span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<p class="mt-3 text-sm text-text-light/80 dark:text-text-dark/80">Sourced from Green Valley Farms, California. Estimated delivery: 2-3 business days. Minimum order: 5kg.</p>
+</details>
+</div>
+<div class="my-4 border-b border-divider-light dark:border-divider-dark"></div>
+<!-- Seller Profile Snippet -->
+<div class="px-4">
+<h3 class="text-xl font-bold mb-3">Sold By</h3>
+<div class="flex items-center gap-4 rounded-lg bg-card-light dark:bg-card-dark p-4 border border-divider-light dark:border-divider-dark">
+<img class="size-14 rounded-lg object-cover" data-alt="A logo for Green Valley Farms showing a green leaf." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiHnqoJBu8jsZG5Cist2n48vnCZHYDq9-BsgpmBkuX9plpyaaBQQ5yGxubeESXTlM_pwoJTaHnIy2a4d6P6AXxv8ZRo8GQZU6HmE7QdPbpYO7nG0MRQYlYd_CLc05Bpv-d92_Ryvou7qgdUFwi3Aq2bWggyuJbTe7VEKo75jmyi1wP_EGW4CvknqnY86dn6nB-DgklDPk7B_auUKud5ZHrSJaZa5bafUHyEpgSC35xVtD7ifluAuQDq3qtQkPv5p6d4cERPK8IVg"/>
+<div class="flex-1">
+<p class="font-bold">Green Valley Farms</p>
+<div class="flex items-center gap-1 text-sm text-text-light/80 dark:text-text-dark/80">
+<span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span>4.9 (152 reviews)</span>
+</div>
+</div>
+<a class="text-primary font-bold" href="#">Profile</a>
+</div>
+</div>
+<div class="my-4 border-b border-divider-light dark:border-divider-dark"></div>
+<!-- Reviews Section -->
+<div class="px-4">
+<div class="flex items-center justify-between">
+<h3 class="text-xl font-bold">Reviews (152)</h3>
+<button class="rounded-full bg-primary/20 px-4 py-2 text-sm font-bold text-primary">Write a Review</button>
+</div>
+<div class="mt-3 flex items-center gap-2">
+<p class="text-3xl font-bold">4.9</p>
+<div class="flex">
+<span class="material-symbols-outlined text-secondary text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-xl" style="font-variation-settings: 'FILL' 1;">star_half</span>
+</div>
+</div>
+<div class="mt-4 space-y-4">
+<div class="rounded-lg bg-card-light dark:bg-card-dark p-4 border border-divider-light dark:border-divider-dark">
+<div class="flex items-center justify-between">
+<p class="font-bold">Chef Maria Rodriguez</p>
+<div class="flex">
+<span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<p class="mt-2 text-sm text-text-light/80 dark:text-text-dark/80">"Absolutely the best tomatoes for our pasta sauce. Consistently fresh and flavorful. Delivery is always on time."</p>
+</div>
+<div class="rounded-lg bg-card-light dark:bg-card-dark p-4 border border-divider-light dark:border-divider-dark">
+<div class="flex items-center justify-between">
+<p class="font-bold">John's Pizzeria</p>
+<div class="flex">
+<span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-base">star_border</span>
+</div>
+</div>
+<p class="mt-2 text-sm text-text-light/80 dark:text-text-dark/80">"Good quality, but had a slight issue with one batch. The seller was quick to resolve it."</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Sticky Action Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-20 border-t border-divider-light dark:border-divider-dark bg-background-light/80 dark:bg-background-dark/80 p-4 backdrop-blur-sm">
+<div class="flex items-center gap-4">
+<div class="flex flex-col">
+<span class="text-sm text-text-light/70 dark:text-text-dark/70">Total Price</span>
+<span class="text-xl font-bold">$3.99</span>
+</div>
+<button class="flex-1 flex h-14 items-center justify-center gap-2 rounded-full bg-primary text-white text-base font-bold">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span>Add to Cart</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

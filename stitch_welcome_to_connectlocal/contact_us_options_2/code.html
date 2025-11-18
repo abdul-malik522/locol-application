@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Report a Problem</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13ec13",
+            "background-light": "#F8F9FA",
+            "background-dark": "#102210",
+            "blue-primary": "#2C3E50",
+            "green-secondary": "#27AE60",
+          },
+          fontFamily: {
+            "display": ["Plus Jakarta Sans"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+    .form-select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.5rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5em 1.5em;
+      padding-right: 2.5rem;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+    .dark .form-select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<header class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10 border-b border-gray-200 dark:border-gray-800">
+<div class="flex size-10 shrink-0 items-center justify-center">
+<span class="material-symbols-outlined text-blue-primary dark:text-gray-100">arrow_back</span>
+</div>
+<h1 class="text-blue-primary dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">Report a Problem</h1>
+</header>
+<main class="flex-1 px-4 py-6 flex flex-col">
+<div class="flex-grow space-y-6">
+<div>
+<label class="block text-sm font-medium text-blue-primary dark:text-gray-300 mb-2" for="problem-type">Type of Problem</label>
+<div class="relative">
+<select class="form-select block w-full rounded-lg border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white shadow-sm focus:border-green-secondary focus:ring-green-secondary transition" id="problem-type" name="problem-type">
+<option>Select a problem type</option>
+<option>Order Issue</option>
+<option>App Bug</option>
+<option>Delivery Problem</option>
+<option>Payment Issue</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-blue-primary dark:text-gray-300 mb-2" for="description">Description</label>
+<textarea class="block w-full rounded-lg border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white shadow-sm focus:border-green-secondary focus:ring-green-secondary transition" id="description" name="description" placeholder="Please provide as much detail as possible about the issue you're facing." rows="6"></textarea>
+</div>
+<div>
+<label class="block text-sm font-medium text-blue-primary dark:text-gray-300 mb-2">Attach Screenshots (Optional)</label>
+<div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-300 dark:border-gray-600 px-6 py-10">
+<div class="text-center">
+<span class="material-symbols-outlined text-4xl text-gray-400 dark:text-gray-500">add_photo_alternate</span>
+<div class="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400">
+<label class="relative cursor-pointer rounded-md font-semibold text-green-secondary focus-within:outline-none focus-within:ring-2 focus-within:ring-green-secondary focus-within:ring-offset-2 hover:text-green-secondary/80 dark:ring-offset-background-dark" for="file-upload">
+<span>Upload a file</span>
+<input class="sr-only" id="file-upload" name="file-upload" type="file"/>
+</label>
+<p class="pl-1">or drag and drop</p>
+</div>
+<p class="text-xs leading-5 text-gray-500 dark:text-gray-500">PNG, JPG, GIF up to 10MB</p>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-8 pb-4">
+<button class="w-full rounded-full bg-green-secondary px-6 py-4 text-base font-bold text-white shadow-md hover:bg-green-secondary/90 focus:outline-none focus:ring-2 focus:ring-green-secondary focus:ring-offset-2 dark:ring-offset-background-dark transition-colors" type="submit">Submit Report</button>
+</div>
+</main>
+</div>
+
+</body></html>

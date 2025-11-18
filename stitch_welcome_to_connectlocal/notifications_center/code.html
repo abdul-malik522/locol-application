@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Notifications Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2E7D32",
+                        "background-light": "#F9F9F9",
+                        "background-dark": "#121212",
+                        "text-light": "#333333",
+                        "text-dark": "#E0E0E0",
+                        "text-secondary-light": "#757575",
+                        "text-secondary-dark": "#B0B0B0",
+                        "accent": "#FF9800",
+                        "surface-light": "#FFFFFF",
+                        "surface-dark": "#1E1E1E",
+                        "border-light": "#EEEEEE",
+                        "border-dark": "#333333"
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 24px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="flex h-16 items-center justify-between px-4">
+<div class="flex size-10 shrink-0 items-center justify-start text-text-light dark:text-text-dark">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h1 class="flex-1 text-center text-lg font-bold text-text-light dark:text-text-dark">Notifications</h1>
+<div class="flex w-10 shrink-0 items-center justify-end">
+<!-- Placeholder for potential actions -->
+</div>
+</div>
+<!-- Tabs -->
+<div class="border-b border-border-light dark:border-border-dark px-4">
+<div class="flex gap-6">
+<a class="flex flex-col items-center justify-center border-b-[3px] border-primary pb-3 pt-2 text-primary" href="#">
+<p class="text-sm font-bold">All</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-[3px] border-transparent pb-3 pt-2 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+<p class="text-sm font-semibold">Orders</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-[3px] border-transparent pb-3 pt-2 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+<p class="text-sm font-semibold">Messages</p>
+</a>
+</div>
+</div>
+</header>
+<!-- Notification List -->
+<main class="flex-1 space-y-2 p-4">
+<!-- List Section Header -->
+<div class="flex items-center justify-between pb-2">
+<h2 class="text-sm font-bold text-text-light dark:text-text-dark">New</h2>
+<button class="text-sm font-semibold text-primary">Mark all as read</button>
+</div>
+<!-- Unread Notification Item 1 -->
+<div class="flex items-center gap-4 rounded-xl bg-primary/10 dark:bg-primary/20 p-4">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/20 dark:bg-primary/30 text-primary dark:text-green-300">
+<span class="material-symbols-outlined">chat</span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-text-light dark:text-text-dark">New message from Farm Fresh Organics</p>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark line-clamp-1">Hey, we have fresh tomatoes in stock!</p>
+</div>
+<div class="flex shrink-0 flex-col items-end gap-1.5 self-start">
+<div class="size-2.5 rounded-full bg-accent"></div>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">5m ago</p>
+</div>
+</div>
+<!-- Unread Notification Item 2 -->
+<div class="flex items-center gap-4 rounded-xl bg-primary/10 dark:bg-primary/20 p-4">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/20 dark:bg-primary/30 text-primary dark:text-green-300">
+<span class="material-symbols-outlined">local_shipping</span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-text-light dark:text-text-dark">Your delivery is on its way</p>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark line-clamp-1">Order #12321 is out for delivery</p>
+</div>
+<div class="flex shrink-0 flex-col items-end gap-1.5 self-start">
+<div class="size-2.5 rounded-full bg-accent"></div>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">2h ago</p>
+</div>
+</div>
+<!-- List Section Header -->
+<div class="flex items-center justify-between py-2 pt-6">
+<h2 class="text-sm font-bold text-text-light dark:text-text-dark">Earlier</h2>
+</div>
+<!-- Read Notification Item 1 -->
+<div class="flex items-center gap-4 rounded-xl bg-surface-light dark:bg-surface-dark p-4">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 text-text-secondary-light dark:text-text-secondary-dark">
+<span class="material-symbols-outlined">inventory</span>
+</div>
+<div class="flex-1">
+<p class="font-medium text-text-light dark:text-text-dark">Low stock warning for Roma Tomatoes</p>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark line-clamp-1">Only 5kg remaining in your inventory.</p>
+</div>
+<div class="shrink-0 self-start">
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">1d ago</p>
+</div>
+</div>
+<!-- Read Notification Item 2 -->
+<div class="flex items-center gap-4 rounded-xl bg-surface-light dark:bg-surface-dark p-4">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 text-text-secondary-light dark:text-text-secondary-dark">
+<span class="material-symbols-outlined">task_alt</span>
+</div>
+<div class="flex-1">
+<p class="font-medium text-text-light dark:text-text-dark">Your order #12345 has been delivered</p>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark line-clamp-1">Delivered to Main Street Kitchen</p>
+</div>
+<div class="shrink-0 self-start">
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">2d ago</p>
+</div>
+</div>
+<!-- Read Notification Item 3 -->
+<div class="flex items-center gap-4 rounded-xl bg-surface-light dark:bg-surface-dark p-4">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 text-text-secondary-light dark:text-text-secondary-dark">
+<span class="material-symbols-outlined">receipt_long</span>
+</div>
+<div class="flex-1">
+<p class="font-medium text-text-light dark:text-text-dark">Order #12345 has been confirmed</p>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark line-clamp-1">Farm Fresh Organics has confirmed your order.</p>
+</div>
+<div class="shrink-0 self-start">
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">2d ago</p>
+</div>
+</div>
+<!-- Empty State (Example) -->
+<!-- 
+            <div class="flex flex-col items-center justify-center pt-24 text-center">
+                <div class="flex h-24 w-24 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-text-secondary-light dark:text-text-secondary-dark">
+                    <span class="material-symbols-outlined !text-4xl">notifications_off</span>
+                </div>
+                <h3 class="mt-6 text-lg font-bold text-text-light dark:text-text-dark">No new notifications</h3>
+                <p class="mt-2 max-w-xs text-sm text-text-secondary-light dark:text-text-secondary-dark">You're all caught up! We'll let you know when there's something new.</p>
+            </div>
+            -->
+</main>
+</div>
+</body></html>

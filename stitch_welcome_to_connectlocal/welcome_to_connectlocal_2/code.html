@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Welcome to FreshConnect</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#13ec13",
+              "background-light": "#f6f8f6",
+              "background-dark": "#102210",
+              "accent": "#F59E0B"
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="flex-grow">
+<div class="absolute inset-0 z-0">
+<img class="h-full w-full object-cover" data-alt="A close-up of fresh, leafy green vegetables in a basket, suggesting farm-to-table ingredients." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIw4go1Ka9oA7kb94j2Er9xneSej0CIueLkWaO-1Ix7kQG_1JJ9LyUQrGwnW3FoGPOF59fPcLIXvexfw2df9JErn3xWYomjcYRWm-Txe7644JTAziT5PuU3YWVHMd6vToAiAjuhrzCwUBCUqGzh0Ab3HzHwXwKL29meT84NKhPf9COXTMcJSFx08fM-illksqBy9zujeX5EnuqiAxJAdGgxcYA4h3YByPLUDBx9AF5e_S-vkWcwX8adFsnTTVYq63KAMGT4GD1CA"/>
+<div class="absolute inset-0 bg-black/50 dark:bg-black/60"></div>
+</div>
+<div class="relative z-10 flex flex-col items-center justify-between min-h-screen p-6 sm:p-8 text-center text-white">
+<header class="w-full flex justify-center pt-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-4xl">eco</span>
+<span class="text-2xl font-bold tracking-tight">FreshConnect</span>
+</div>
+</header>
+<main class="flex flex-col items-center gap-4 sm:gap-6 w-full max-w-xl">
+<h1 class="text-4xl font-black leading-tight tracking-tighter md:text-5xl">The Freshest Ingredients, Sourced Locally</h1>
+<p class="text-base sm:text-lg font-normal text-white/90 max-w-md">The marketplace for restaurants to discover and order from the best local farms and sellers.</p>
+</main>
+<footer class="w-full flex flex-col items-center gap-8 pb-6">
+<div class="grid grid-cols-3 gap-4 text-center max-w-lg w-full">
+<div class="flex flex-col items-center gap-2 p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+<span class="material-symbols-outlined text-primary text-3xl">grass</span>
+<span class="text-xs sm:text-sm font-semibold">Fresh Ingredients</span>
+</div>
+<div class="flex flex-col items-center gap-2 p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+<span class="material-symbols-outlined text-primary text-3xl">storefront</span>
+<span class="text-xs sm:text-sm font-semibold">Local Sourcing</span>
+</div>
+<div class="flex flex-col items-center gap-2 p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+<span class="material-symbols-outlined text-primary text-3xl">local_shipping</span>
+<span class="text-xs sm:text-sm font-semibold">Easy Delivery</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-3 w-full max-w-sm">
+<button class="flex w-full min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 bg-accent text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-amber-600 transition-colors">
+<span class="truncate">Create an Account</span>
+</button>
+<button class="group flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 text-base font-bold leading-normal tracking-[0.015em] text-white">
+<span class="truncate">Already have an account? <span class="font-bold underline group-hover:text-primary transition-colors">Log In</span></span>
+</button>
+</div>
+</footer>
+</div>
+</div>
+</div>
+</body></html>
