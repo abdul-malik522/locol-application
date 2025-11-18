@@ -20,28 +20,28 @@ class AppTheme {
 
     return base.copyWith(
       scaffoldBackgroundColor: AppColors.background,
-      textTheme: GoogleFonts.interTextTheme(base.textTheme).copyWith(
-        displayLarge: GoogleFonts.inter(
+      textTheme: GoogleFonts.plusJakartaSansTextTheme(base.textTheme).copyWith(
+        displayLarge: GoogleFonts.plusJakartaSans(
           fontSize: 48,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: AppColors.textPrimary,
         ),
-        headlineMedium: GoogleFonts.inter(
+        headlineMedium: GoogleFonts.plusJakartaSans(
           fontSize: 24,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
-        bodyLarge: GoogleFonts.inter(
+        bodyLarge: GoogleFonts.plusJakartaSans(
           fontSize: 16,
           color: AppColors.textPrimary,
         ),
-        bodyMedium: GoogleFonts.inter(
+        bodyMedium: GoogleFonts.plusJakartaSans(
           fontSize: 14,
           color: AppColors.textSecondary,
         ),
-        labelLarge: GoogleFonts.inter(
+        labelLarge: GoogleFonts.plusJakartaSans(
           fontSize: 14,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
       ),
@@ -50,9 +50,9 @@ class AppTheme {
         centerTitle: true,
         backgroundColor: AppColors.background,
         foregroundColor: AppColors.textPrimary,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: GoogleFonts.plusJakartaSans(
           fontSize: 20,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
       ),
@@ -99,9 +99,9 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.plusJakartaSans(
             fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
@@ -149,28 +149,28 @@ class AppTheme {
 
     return base.copyWith(
       scaffoldBackgroundColor: AppColors.backgroundDark,
-      textTheme: GoogleFonts.interTextTheme(base.textTheme).copyWith(
-        displayLarge: GoogleFonts.inter(
+      textTheme: GoogleFonts.plusJakartaSansTextTheme(base.textTheme).copyWith(
+        displayLarge: GoogleFonts.plusJakartaSans(
           fontSize: 48,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: AppColors.textPrimaryDark,
         ),
-        headlineMedium: GoogleFonts.inter(
+        headlineMedium: GoogleFonts.plusJakartaSans(
           fontSize: 24,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimaryDark,
         ),
-        bodyLarge: GoogleFonts.inter(
+        bodyLarge: GoogleFonts.plusJakartaSans(
           fontSize: 16,
           color: AppColors.textPrimaryDark,
         ),
-        bodyMedium: GoogleFonts.inter(
+        bodyMedium: GoogleFonts.plusJakartaSans(
           fontSize: 14,
           color: AppColors.textSecondaryDark,
         ),
-        labelLarge: GoogleFonts.inter(
+        labelLarge: GoogleFonts.plusJakartaSans(
           fontSize: 14,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimaryDark,
         ),
       ),
@@ -179,9 +179,9 @@ class AppTheme {
         centerTitle: true,
         backgroundColor: AppColors.backgroundDark,
         foregroundColor: AppColors.textPrimaryDark,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: GoogleFonts.plusJakartaSans(
           fontSize: 20,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimaryDark,
         ),
       ),
