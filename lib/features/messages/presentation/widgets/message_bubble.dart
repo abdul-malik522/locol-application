@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:localtrade/core/constants/app_constants.dart';
 import 'package:localtrade/core/widgets/cached_image.dart';
@@ -605,7 +606,7 @@ class MessageBubble extends ConsumerWidget {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               final counterPrice = double.tryParse(counterPriceController.text);
               if (counterPrice != null && counterPrice > 0) {
                 final counterOffer = PriceOfferData(
@@ -642,10 +643,12 @@ class MessageBubble extends ConsumerWidget {
                   currentUser.name,
                 );
 
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Counter offer sent')),
-                );
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Counter offer sent')),
+                  );
+                }
               }
             },
             child: const Text('Send Counter Offer'),
@@ -782,7 +785,6 @@ class MessageBubble extends ConsumerWidget {
               _buildReactions(context, ref),
             ],
           ],
-        ),
         ),
       ),
     );

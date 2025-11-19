@@ -1138,7 +1138,6 @@ class _FilterBottomSheetState extends ConsumerState<_FilterBottomSheet> {
       ),
     );
   }
-}
 
   Future<void> _showSaveSearchDialog(BuildContext context, SearchState state) async {
     final nameController = TextEditingController();
