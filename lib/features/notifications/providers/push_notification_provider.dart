@@ -108,11 +108,10 @@ class PushNotificationStatusNotifier extends StateNotifier<PushNotificationStatu
     state = state.copyWith(isRegistering: true, error: null);
     try {
       // Check notification settings to see if push is enabled
-      final settings = await _ref.read(
-        notificationSettingsProvider(userId).future,
-      );
+      final settingsAsync = _ref.read(notificationSettingsProvider(userId));
+      final settings = settingsAsync.value;
       
-      if (settings.enableAll && settings.pushEnabled) {
+      if (settings != null && settings.enableAll && settings.pushEnabled) {
         await _service.registerToken(userId, token);
       }
     } catch (e) {
@@ -147,12 +146,11 @@ class PushNotificationStatusNotifier extends StateNotifier<PushNotificationStatu
     final currentUser = _ref.read(currentUserProvider);
     if (currentUser == null) return;
 
-    final settings = await _ref.read(
-      notificationSettingsProvider(currentUser.id).future,
-    );
+    final settingsAsync = _ref.read(notificationSettingsProvider(currentUser.id));
+    final settings = settingsAsync.value;
 
     // Check if notifications are enabled
-    if (!settings.enableAll || !settings.pushEnabled) {
+    if (settings == null || !settings.enableAll || !settings.pushEnabled) {
       return; // Don't show notification if disabled
     }
 

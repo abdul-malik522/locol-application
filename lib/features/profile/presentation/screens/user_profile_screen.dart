@@ -36,6 +36,7 @@ class UserProfileScreen extends ConsumerStatefulWidget {
 class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
   UserModel? _user;
   bool _isLoading = true;
+  final _uuid = const Uuid();
 
   @override
   void initState() {
@@ -590,7 +591,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                         : () => _toggleFollow(context, currentUser.id, _user!.id, isFollowing),
                     variant: isFollowing
                         ? CustomButtonVariant.outlined
-                        : CustomButtonVariant.filled,
+                        : CustomButtonVariant.primary,
                     icon: isFollowing ? Icons.person_remove_outlined : Icons.person_add_outlined,
                   ),
                   loading: () => CustomButton(

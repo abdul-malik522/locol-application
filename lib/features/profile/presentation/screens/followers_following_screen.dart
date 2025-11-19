@@ -214,14 +214,10 @@ class _FollowersFollowingScreenState
                             ),
                             variant: isFollowing
                                 ? CustomButtonVariant.outlined
-                                : CustomButtonVariant.filled,
+                                : CustomButtonVariant.primary,
                             icon: isFollowing
                                 ? Icons.person_remove_outlined
                                 : Icons.person_add_outlined,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
                           ),
                         ),
                         loading: () => const Padding(

@@ -16,7 +16,8 @@ import 'package:localtrade/features/profile/data/models/review_model.dart';
 import 'package:localtrade/features/profile/data/models/verification_badge_model.dart';
 import 'package:localtrade/features/profile/presentation/widgets/certification_widget.dart';
 import 'package:localtrade/features/profile/presentation/widgets/verification_badge_widget.dart';
-import 'package:localtrade/features/profile/data/services/profile_share_service.dart';
+import 'package:localtrade/features/profile/data/services/profile_share_service.dart'
+    show ProfileShareService, SharePlatform;
 import 'package:localtrade/features/profile/providers/follows_provider.dart';
 import 'package:localtrade/features/profile/providers/reviews_provider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -389,7 +390,7 @@ class ProfileScreen extends ConsumerWidget {
               Expanded(
                 child: CustomButton(
                   text: 'Share Profile',
-                  onPressed: () => _showShareDialog(context, ref, currentUser),
+                  onPressed: () => _showShareDialog(context, currentUser),
                   variant: CustomButtonVariant.outlined,
                 ),
               ),
@@ -835,6 +836,134 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showShareDialog(BuildContext context, UserModel user) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Share Profile',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ),
+            const Divider(),
+            GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 3,
+              padding: const EdgeInsets.all(16),
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              children: [
+                _buildShareOption(
+                  context,
+                  SharePlatform.native,
+                  Icons.share,
+                  () => ProfileShareService.instance.shareToPlatform(user, SharePlatform.native),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.whatsapp,
+                  Icons.chat,
+                  () => ProfileShareService.instance.shareToPlatform(user, SharePlatform.whatsapp),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.facebook,
+                  Icons.facebook,
+                  () => ProfileShareService.instance.shareToPlatform(user, SharePlatform.facebook),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.twitter,
+                  Icons.alternate_email,
+                  () => ProfileShareService.instance.shareToPlatform(user, SharePlatform.twitter),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.email,
+                  Icons.email,
+                  () => ProfileShareService.instance.shareToPlatform(user, SharePlatform.email),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.sms,
+                  Icons.sms,
+                  () => ProfileShareService.instance.shareToPlatform(user, SharePlatform.sms),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.copyLink,
+                  Icons.link,
+                  () async {
+                    await ProfileShareService.instance.shareToPlatform(user, SharePlatform.copyLink);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Link copied to clipboard!')),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShareOption(
+    BuildContext context,
+    SharePlatform platform,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: () {
+        Navigator.pop(context);
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 32,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              platform.label,
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -257,6 +257,10 @@ class NotificationSettingsModel {
         return messageNotifications;
       case NotificationType.system:
         return systemNotifications;
+      case NotificationType.follow:
+        return followNotifications;
+      case NotificationType.review:
+        return reviewNotifications;
     }
   }
 }
@@ -322,6 +326,10 @@ extension NotificationTypeExtension on NotificationType {
         return 'Messages';
       case NotificationType.system:
         return 'System';
+      case NotificationType.follow:
+        return 'Follows';
+      case NotificationType.review:
+        return 'Reviews';
     }
   }
 
@@ -337,6 +345,10 @@ extension NotificationTypeExtension on NotificationType {
         return Colors.purple;
       case NotificationType.system:
         return Colors.orange;
+      case NotificationType.follow:
+        return Colors.teal;
+      case NotificationType.review:
+        return Colors.amber;
     }
   }
 }

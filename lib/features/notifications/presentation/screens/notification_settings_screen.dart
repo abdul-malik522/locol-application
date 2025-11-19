@@ -260,7 +260,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
       children: [
         // Master toggle for this type
         SwitchListTile(
-          title: const Text('Enable ${type.label}'),
+          title: Text('Enable ${type.label}'),
           value: isEnabled,
           onChanged: settings.enableAll
               ? (value) {
@@ -275,8 +275,8 @@ class NotificationSettingsScreen extends ConsumerWidget {
         // Channel toggles for this type
         if (isEnabled && settings.pushEnabled)
           SwitchListTile(
-            leading: Icon(NotificationChannel.push.icon),
             title: Text(NotificationChannel.push.label),
+            subtitle: Text('Push notifications'),
             value: typeSettings.pushEnabled,
             onChanged: (value) {
               final updated = typeSettings.copyWith(pushEnabled: value);
@@ -287,8 +287,8 @@ class NotificationSettingsScreen extends ConsumerWidget {
           ),
         if (isEnabled && settings.emailEnabled)
           SwitchListTile(
-            leading: Icon(NotificationChannel.email.icon),
             title: Text(NotificationChannel.email.label),
+            subtitle: Text('Email notifications'),
             value: typeSettings.emailEnabled,
             onChanged: (value) {
               final updated = typeSettings.copyWith(emailEnabled: value);
@@ -299,8 +299,8 @@ class NotificationSettingsScreen extends ConsumerWidget {
           ),
         if (isEnabled && settings.inAppEnabled)
           SwitchListTile(
-            leading: Icon(NotificationChannel.inApp.icon),
             title: Text(NotificationChannel.inApp.label),
+            subtitle: Text('In-app notifications'),
             value: typeSettings.inAppEnabled,
             onChanged: (value) {
               final updated = typeSettings.copyWith(inAppEnabled: value);
@@ -351,8 +351,8 @@ class NotificationSettingsScreen extends ConsumerWidget {
         // Channel toggles for this type
         if (isEnabled && settings.pushEnabled)
           SwitchListTile(
-            leading: Icon(NotificationChannel.push.icon),
             title: Text(NotificationChannel.push.label),
+            subtitle: Text('Push notifications'),
             value: typeSettings.pushEnabled,
             onChanged: (value) {
               final updated = typeSettings.copyWith(pushEnabled: value);
@@ -363,8 +363,8 @@ class NotificationSettingsScreen extends ConsumerWidget {
           ),
         if (isEnabled && settings.emailEnabled)
           SwitchListTile(
-            leading: Icon(NotificationChannel.email.icon),
             title: Text(NotificationChannel.email.label),
+            subtitle: Text('Email notifications'),
             value: typeSettings.emailEnabled,
             onChanged: (value) {
               final updated = typeSettings.copyWith(emailEnabled: value);
@@ -375,8 +375,8 @@ class NotificationSettingsScreen extends ConsumerWidget {
           ),
         if (isEnabled && settings.inAppEnabled)
           SwitchListTile(
-            leading: Icon(NotificationChannel.inApp.icon),
             title: Text(NotificationChannel.inApp.label),
+            subtitle: Text('In-app notifications'),
             value: typeSettings.inAppEnabled,
             onChanged: (value) {
               final updated = typeSettings.copyWith(inAppEnabled: value);

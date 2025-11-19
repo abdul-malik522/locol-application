@@ -172,7 +172,7 @@ class _PreOrdersScreenState extends ConsumerState<PreOrdersScreen> {
                         child: CustomButton(
                           text: 'Confirm',
                           onPressed: () => _confirmPreOrder(context, ref, preOrder, userId),
-                          variant: CustomButtonVariant.filled,
+                          variant: CustomButtonVariant.primary,
                         ),
                       ),
                       const SizedBox(width: 8),

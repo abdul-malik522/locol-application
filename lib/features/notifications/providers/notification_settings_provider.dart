@@ -94,6 +94,10 @@ class NotificationSettingsNotifier
         current.copyWith(messageNotifications: settings),
       NotificationType.system =>
         current.copyWith(systemNotifications: settings),
+      NotificationType.follow =>
+        current.copyWith(followNotifications: settings),
+      NotificationType.review =>
+        current.copyWith(reviewNotifications: settings),
     };
     await updateSettings(updated);
   }

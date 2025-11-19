@@ -1083,7 +1083,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
               );
             },
             icon: const Icon(Icons.chat_outlined),
-            label: const Text('Contact ${isBuyer ? 'Seller' : 'Buyer'}'),
+            label: Text('Contact ${isBuyer ? 'Seller' : 'Buyer'}'),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size.fromHeight(48),
             ),
