@@ -79,35 +79,35 @@ class MessageBubble extends ConsumerWidget {
               else if (message.isPriceOfferMessage && message.priceOfferData != null)
                 _buildPriceOfferMessage(context, ref),
               const SizedBox(height: 4),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  timeago.format(message.createdAt),
-                  style: TextStyle(
-                    color: isSentByMe
-                        ? Colors.white70
-                        : Theme.of(context).colorScheme.secondary,
-                    fontSize: 11,
-                  ),
-                ),
-                if (isSentByMe) ...[
-                  const SizedBox(width: 4),
-                  Tooltip(
-                    message: message.isRead
-                        ? (message.readAt != null
-                            ? 'Read ${timeago.format(message.readAt!)}'
-                            : 'Read')
-                        : 'Sent',
-                    child: Icon(
-                      message.isRead ? Icons.done_all : Icons.done,
-                      size: 14,
-                      color: message.isRead ? Colors.blue : Colors.white70,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    timeago.format(message.createdAt),
+                    style: TextStyle(
+                      color: isSentByMe
+                          ? Colors.white70
+                          : Theme.of(context).colorScheme.secondary,
+                      fontSize: 11,
                     ),
                   ),
+                  if (isSentByMe) ...[
+                    const SizedBox(width: 4),
+                    Tooltip(
+                      message: message.isRead
+                          ? (message.readAt != null
+                              ? 'Read ${timeago.format(message.readAt!)}'
+                              : 'Read')
+                          : 'Sent',
+                      child: Icon(
+                        message.isRead ? Icons.done_all : Icons.done,
+                        size: 14,
+                        color: message.isRead ? Colors.blue : Colors.white70,
+                      ),
+                    ),
+                  ],
                 ],
-              ],
-            ),
+              ),
           ],
         ),
       ),
