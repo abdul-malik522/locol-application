@@ -168,7 +168,8 @@ class _EditPostScreenState extends ConsumerState<EditPostScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final currentUser = ref.read(currentUserProvider);
-    if (currentUser == null || _originalPost == null) {
+    final originalPost = _originalPost;
+    if (currentUser == null || originalPost == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Unable to update post')),
       );
@@ -176,7 +177,7 @@ class _EditPostScreenState extends ConsumerState<EditPostScreen> {
     }
 
     // Check if user owns the post
-    if (currentUser.id != _originalPost.userId) {
+    if (currentUser.id != originalPost.userId) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('You can only edit your own posts')),
       );
@@ -216,18 +217,18 @@ class _EditPostScreenState extends ConsumerState<EditPostScreen> {
       // Combine existing and new image URLs
       final allImageUrls = [..._existingImageUrls, ...newImageUrls];
 
-      final updatedPost = _originalPost!.copyWith(
+      final updatedPost = originalPost.copyWith(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         imageUrls: allImageUrls,
         category: _selectedCategory!,
-        price: _originalPost!.postType == PostType.product && _priceController.text.isNotEmpty
+        price: originalPost.postType == PostType.product && _priceController.text.isNotEmpty
             ? double.tryParse(_priceController.text)
             : null,
         quantity: _quantityController.text.trim().isNotEmpty
             ? _quantityController.text.trim()
             : null,
-        location: _location ?? _originalPost!.location,
+        location: _location ?? originalPost.location,
         latitude: _position!.latitude,
         longitude: _position!.longitude,
         expiresAt: _hasExpiration ? _expirationDateTime : null,
@@ -270,9 +271,9 @@ class _EditPostScreenState extends ConsumerState<EditPostScreen> {
 
         // Check if user owns the post
         if (currentUser?.id != post.userId) {
-          return Scaffold(
-            appBar: const CustomAppBar(title: 'Edit Post'),
-            body: const Center(
+          return const Scaffold(
+            appBar: CustomAppBar(title: 'Edit Post'),
+            body: Center(
               child: Text('You can only edit your own posts'),
             ),
           );
@@ -281,89 +282,99 @@ class _EditPostScreenState extends ConsumerState<EditPostScreen> {
         final isSeller = post.postType == PostType.product;
 
         return Scaffold(
-      appBar: CustomAppBar(
-        title: 'Edit Post',
-        actions: [
-          TextButton(
-            onPressed: _isSubmitting ? null : _submit,
-            child: _isSubmitting
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Save'),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildImagePicker(),
-              const SizedBox(height: 24),
-              CustomTextField(
-                controller: _titleController,
-                label: 'Title',
-                hint: 'Enter post title',
-                validator: (value) => Validators.validateRequired(value, 'title'),
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _descriptionController,
-                label: 'Description',
-                hint: 'Describe your product or request...',
-                validator: (value) => Validators.validateRequired(
-                  value,
-                  'description',
-                ),
-                maxLines: 5,
-              ),
-              const SizedBox(height: 16),
-              _buildCategoryDropdown(),
-              const SizedBox(height: 16),
-              if (isSeller) ...[
-                CustomTextField(
-                  controller: _priceController,
-                  label: 'Price',
-                  hint: '0.00',
-                  keyboardType: TextInputType.number,
-                  prefixIcon: Icons.attach_money,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Price is required for products';
-                    }
-                    return Validators.validatePrice(value);
-                  },
-                ),
-                const SizedBox(height: 16),
-              ],
-              CustomTextField(
-                controller: _quantityController,
-                label: isSeller ? 'Quantity Available' : 'Quantity Needed',
-                hint: isSeller ? 'e.g., 10 kg, 5 pieces' : 'e.g., 20 kg',
-                validator: (value) => Validators.validateRequired(
-                  value,
-                  'quantity',
-                ),
-              ),
-              const SizedBox(height: 16),
-              _buildLocationSection(),
-              const SizedBox(height: 16),
-              _buildExpirationSection(),
-              const SizedBox(height: 32),
-              CustomButton(
-                text: 'Update Post',
+          appBar: CustomAppBar(
+            title: 'Edit Post',
+            actions: [
+              TextButton(
                 onPressed: _isSubmitting ? null : _submit,
-                isLoading: _isSubmitting,
-                fullWidth: true,
+                child: _isSubmitting
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Save'),
               ),
             ],
           ),
-        ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildImagePicker(),
+                  const SizedBox(height: 24),
+                  CustomTextField(
+                    controller: _titleController,
+                    label: 'Title',
+                    hint: 'Enter post title',
+                    validator: (value) => Validators.validateRequired(value, 'title'),
+                  ),
+                  const SizedBox(height: 16),
+                  CustomTextField(
+                    controller: _descriptionController,
+                    label: 'Description',
+                    hint: 'Describe your product or request...',
+                    validator: (value) => Validators.validateRequired(
+                      value,
+                      'description',
+                    ),
+                    maxLines: 5,
+                  ),
+                  const SizedBox(height: 16),
+                  _buildCategoryDropdown(),
+                  const SizedBox(height: 16),
+                  if (isSeller) ...[
+                    CustomTextField(
+                      controller: _priceController,
+                      label: 'Price',
+                      hint: '0.00',
+                      keyboardType: TextInputType.number,
+                      prefixIcon: Icons.attach_money,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Price is required for products';
+                        }
+                        return Validators.validatePrice(value);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  CustomTextField(
+                    controller: _quantityController,
+                    label: isSeller ? 'Quantity Available' : 'Quantity Needed',
+                    hint: isSeller ? 'e.g., 10 kg, 5 pieces' : 'e.g., 20 kg',
+                    validator: (value) => Validators.validateRequired(
+                      value,
+                      'quantity',
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildLocationSection(),
+                  const SizedBox(height: 16),
+                  _buildExpirationSection(),
+                  const SizedBox(height: 32),
+                  CustomButton(
+                    text: 'Update Post',
+                    onPressed: _isSubmitting ? null : _submit,
+                    isLoading: _isSubmitting,
+                    fullWidth: true,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+      loading: () => const Scaffold(
+        appBar: CustomAppBar(title: 'Edit Post'),
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, stack) => Scaffold(
+        appBar: const CustomAppBar(title: 'Edit Post'),
+        body: Center(child: Text('Error loading post: $error')),
       ),
     );
   }
@@ -747,15 +758,5 @@ class _EditPostScreenState extends ConsumerState<EditPostScreen> {
     final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
     return '$displayHour:$minute $period';
   }
-      },
-      loading: () => const Scaffold(
-        appBar: CustomAppBar(title: 'Edit Post'),
-        body: Center(child: CircularProgressIndicator()),
-      ),
-      error: (error, stack) => Scaffold(
-        appBar: const CustomAppBar(title: 'Edit Post'),
-        body: Center(child: Text('Error loading post: $error')),
-      ),
-    );
-  }
+}
 
