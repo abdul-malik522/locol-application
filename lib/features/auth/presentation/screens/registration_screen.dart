@@ -9,6 +9,7 @@ import 'package:localtrade/core/utils/validators.dart';
 import 'package:localtrade/core/widgets/custom_app_bar.dart';
 import 'package:localtrade/core/widgets/custom_button.dart';
 import 'package:localtrade/core/widgets/custom_text_field.dart';
+import 'package:localtrade/features/auth/presentation/widgets/social_login_role_dialog.dart';
 import 'package:localtrade/features/auth/providers/auth_provider.dart';
 
 class RegistrationScreen extends ConsumerStatefulWidget {
@@ -45,7 +46,9 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
         _showSnackBar(next.error!);
       }
       if (prev?.user == null && next.user != null && mounted) {
-        context.go('/home');
+        // Redirect to email verification instead of home
+        final email = next.user!.email;
+        context.go('/verify-email?email=${Uri.encodeComponent(email)}');
       }
     });
   }
@@ -110,6 +113,92 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
             'longitude': _position?.longitude,
           },
         );
+  }
+
+  Future<void> _signInWithGoogle() async {
+    // Show role selection for social login
+    final role = await showDialog<UserRole>(
+      context: context,
+      builder: (context) => SocialLoginRoleDialog(
+        onRoleSelected: (role) {
+          Navigator.pop(context, role);
+        },
+      ),
+    );
+
+    if (role != null && mounted) {
+      await ref.read(authProvider.notifier).signInWithGoogle(role: role);
+    }
+  }
+
+  Future<void> _signInWithApple() async {
+    final role = await showDialog<UserRole>(
+      context: context,
+      builder: (context) => SocialLoginRoleDialog(
+        onRoleSelected: (role) {
+          Navigator.pop(context, role);
+        },
+      ),
+    );
+
+    if (role != null && mounted) {
+      await ref.read(authProvider.notifier).signInWithApple(role: role);
+    }
+  }
+
+  Future<void> _signInWithFacebook() async {
+    final role = await showDialog<UserRole>(
+      context: context,
+      builder: (context) => SocialLoginRoleDialog(
+        onRoleSelected: (role) {
+          Navigator.pop(context, role);
+        },
+      ),
+    );
+
+    if (role != null && mounted) {
+      await ref.read(authProvider.notifier).signInWithFacebook(role: role);
+    }
+  }
+
+  Widget _buildSocialLoginButton(
+    BuildContext context,
+    String text,
+    IconData icon,
+    Color backgroundColor,
+    Color textColor,
+    VoidCallback onPressed,
+  ) {
+    final authState = ref.watch(authProvider);
+    
+    return OutlinedButton(
+      onPressed: authState.isLoading ? null : onPressed,
+      style: OutlinedButton.styleFrom(
+        backgroundColor: backgroundColor,
+        foregroundColor: textColor,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 24),
+          const SizedBox(width: 12),
+          Text(
+            text,
+            style: TextStyle(
+              color: textColor,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -242,6 +331,49 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                   onPressed: authState.isLoading ? null : _submit,
                   isLoading: authState.isLoading,
                   fullWidth: true,
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: Theme.of(context).colorScheme.outline)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'OR',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        ),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: Theme.of(context).colorScheme.outline)),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                _buildSocialLoginButton(
+                  context,
+                  'Continue with Google',
+                  Icons.g_mobiledata,
+                  Colors.white,
+                  Colors.black87,
+                  () => _signInWithGoogle(),
+                ),
+                const SizedBox(height: 12),
+                _buildSocialLoginButton(
+                  context,
+                  'Continue with Apple',
+                  Icons.apple,
+                  Colors.black,
+                  Colors.white,
+                  () => _signInWithApple(),
+                ),
+                const SizedBox(height: 12),
+                _buildSocialLoginButton(
+                  context,
+                  'Continue with Facebook',
+                  Icons.facebook,
+                  const Color(0xFF1877F2),
+                  Colors.white,
+                  () => _signInWithFacebook(),
                 ),
                 const SizedBox(height: 16),
                 Center(

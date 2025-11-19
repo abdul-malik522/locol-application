@@ -11,6 +11,8 @@ class ChatModel {
     this.lastMessageTime,
     this.lastMessageSenderId,
     this.unreadCount = const {},
+    this.archivedBy = const {},
+    this.mutedBy = const {},
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -22,6 +24,8 @@ class ChatModel {
   final DateTime? lastMessageTime;
   final String? lastMessageSenderId;
   final Map<String, int> unreadCount;
+  final Map<String, bool> archivedBy; // userId -> isArchived (per-user archiving)
+  final Map<String, bool> mutedBy; // userId -> isMuted (per-user muting)
   final DateTime createdAt;
 
   String? getOtherParticipantId(String currentUserId) {
@@ -45,6 +49,14 @@ class ChatModel {
     return unreadCount[userId] ?? 0;
   }
 
+  bool isArchivedBy(String userId) {
+    return archivedBy[userId] ?? false;
+  }
+
+  bool isMutedBy(String userId) {
+    return mutedBy[userId] ?? false;
+  }
+
   ChatModel copyWith({
     String? id,
     List<String>? participants,
@@ -54,6 +66,8 @@ class ChatModel {
     DateTime? lastMessageTime,
     String? lastMessageSenderId,
     Map<String, int>? unreadCount,
+    Map<String, bool>? archivedBy,
+    Map<String, bool>? mutedBy,
     DateTime? createdAt,
   }) {
     return ChatModel(
@@ -65,6 +79,8 @@ class ChatModel {
       lastMessageTime: lastMessageTime ?? this.lastMessageTime,
       lastMessageSenderId: lastMessageSenderId ?? this.lastMessageSenderId,
       unreadCount: unreadCount ?? this.unreadCount,
+      archivedBy: archivedBy ?? this.archivedBy,
+      mutedBy: mutedBy ?? this.mutedBy,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -89,6 +105,20 @@ class ChatModel {
       unreadCount: Map<String, int>.from(
         (json['unreadCount'] as Map<String, dynamic>?) ?? {},
       ),
+      archivedBy: json['archivedBy'] != null
+          ? Map<String, bool>.from(
+              (json['archivedBy'] as Map<String, dynamic>).map(
+                (key, value) => MapEntry(key, value as bool),
+              ),
+            )
+          : {},
+      mutedBy: json['mutedBy'] != null
+          ? Map<String, bool>.from(
+              (json['mutedBy'] as Map<String, dynamic>).map(
+                (key, value) => MapEntry(key, value as bool),
+              ),
+            )
+          : {},
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
   }
@@ -103,6 +133,8 @@ class ChatModel {
       'lastMessageTime': lastMessageTime?.toIso8601String(),
       'lastMessageSenderId': lastMessageSenderId,
       'unreadCount': unreadCount,
+      'archivedBy': archivedBy,
+      'mutedBy': mutedBy,
       'createdAt': createdAt.toIso8601String(),
     };
   }

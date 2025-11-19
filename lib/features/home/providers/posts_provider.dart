@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:localtrade/core/constants/app_constants.dart';
+import 'package:localtrade/features/auth/providers/auth_provider.dart';
 import 'package:localtrade/features/home/data/datasources/posts_mock_datasource.dart';
 import 'package:localtrade/features/home/data/models/comment_model.dart';
 import 'package:localtrade/features/home/data/models/post_model.dart';
+import 'package:localtrade/features/profile/providers/follows_provider.dart';
 
 class PostsState {
   const PostsState({
@@ -45,9 +47,10 @@ final postsMockDataSourceProvider =
     Provider<PostsMockDataSource>((ref) => PostsMockDataSource.instance);
 
 class PostsNotifier extends StateNotifier<PostsState> {
-  PostsNotifier(this._dataSource) : super(const PostsState());
+  PostsNotifier(this._dataSource, this.ref) : super(const PostsState());
 
   final PostsMockDataSource _dataSource;
+  final Ref ref;
 
   Future<void> loadPosts({bool refresh = false}) async {
     if (refresh) {
@@ -64,14 +67,33 @@ class PostsNotifier extends StateNotifier<PostsState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
+      // Check and publish scheduled posts before loading
+      await _dataSource.publishScheduledPosts();
+      
+      List<String>? followingUserIds;
+      if (state.filter == 'following') {
+        // Get list of users that current user is following
+        final currentUser = ref.read(currentUserProvider);
+        if (currentUser != null) {
+          final followsDataSource = ref.read(followsDataSourceProvider);
+          followingUserIds = await followsDataSource.getFollowing(currentUser.id);
+        }
+      }
+      
+      final isTrending = state.filter == 'trending';
       final newPosts = await _dataSource.getPosts(
         state.currentPage,
         AppConstants.paginationLimit,
-        state.filter == 'all' ? null : state.filter,
+        state.filter == 'all' || state.filter == 'following' || state.filter == 'trending' ? null : state.filter,
+        followingUserIds: followingUserIds,
+        trending: isTrending,
       );
 
+      // Filter out scheduled posts that aren't published yet
+      final publishedPosts = newPosts.where((p) => p.isPublished).toList();
+
       state = state.copyWith(
-        posts: refresh ? newPosts : [...state.posts, ...newPosts],
+        posts: refresh ? publishedPosts : [...state.posts, ...publishedPosts],
         isLoading: false,
         hasMore: newPosts.length >= AppConstants.paginationLimit,
         currentPage: refresh ? 2 : state.currentPage + 1,
@@ -112,11 +134,44 @@ class PostsNotifier extends StateNotifier<PostsState> {
   Future<void> createPost(PostModel post) async {
     try {
       final created = await _dataSource.createPost(post);
-      state = state.copyWith(
-        posts: [created, ...state.posts],
-      );
+      
+      // Only add to feed if it's published (not scheduled)
+      if (created.isPublished) {
+        state = state.copyWith(
+          posts: [created, ...state.posts],
+        );
+      } else {
+        // Scheduled post - don't add to feed yet, but update state to trigger refresh
+        state = state.copyWith(posts: state.posts);
+      }
     } catch (e) {
       state = state.copyWith(error: 'Failed to create post: ${e.toString()}');
+    }
+  }
+
+  Future<List<PostModel>> getScheduledPosts(String userId) async {
+    return _dataSource.getScheduledPosts(userId);
+  }
+
+  Future<void> cancelScheduledPost(String postId) async {
+    try {
+      // Get the post and update it to remove scheduling
+      final posts = state.posts;
+      final postIndex = posts.indexWhere((p) => p.id == postId);
+      if (postIndex != -1) {
+        final post = posts[postIndex];
+        final updated = post.copyWith(isScheduled: false, scheduledAt: null);
+        await _dataSource.updatePost(updated);
+        await loadPosts(refresh: true);
+      } else {
+        // Post might be in scheduled list, try to find and update
+        final allPosts = await _dataSource.getPosts(1, 1000, null);
+        final post = allPosts.firstWhere((p) => p.id == postId);
+        final updated = post.copyWith(isScheduled: false, scheduledAt: null);
+        await _dataSource.updatePost(updated);
+      }
+    } catch (e) {
+      state = state.copyWith(error: 'Failed to cancel scheduled post: ${e.toString()}');
     }
   }
 
@@ -128,6 +183,58 @@ class PostsNotifier extends StateNotifier<PostsState> {
       );
     } catch (e) {
       state = state.copyWith(error: 'Failed to delete post: ${e.toString()}');
+    }
+  }
+
+  Future<void> archivePost(String postId) async {
+    try {
+      final post = state.posts.firstWhere((p) => p.id == postId);
+      final updated = post.copyWith(isArchived: true);
+      await _dataSource.updatePost(updated);
+      final index = state.posts.indexWhere((p) => p.id == postId);
+      if (index != -1) {
+        final updatedPosts = List<PostModel>.from(state.posts);
+        updatedPosts[index] = updated;
+        state = state.copyWith(posts: updatedPosts);
+      }
+    } catch (e) {
+      state = state.copyWith(error: 'Failed to archive post: ${e.toString()}');
+    }
+  }
+
+  Future<void> unarchivePost(String postId) async {
+    try {
+      // Get post directly from datasource (including archived)
+      final post = await _dataSource.getPostById(postId);
+      if (post == null) {
+        throw Exception('Post not found');
+      }
+      final updated = post.copyWith(isArchived: false);
+      await _dataSource.updatePost(updated);
+      // Refresh posts to include unarchived post
+      await loadPosts(refresh: true);
+    } catch (e) {
+      state = state.copyWith(error: 'Failed to unarchive post: ${e.toString()}');
+      rethrow;
+    }
+  }
+
+  Future<List<PostModel>> getArchivedPosts(String userId) async {
+    return _dataSource.getArchivedPosts(userId);
+  }
+
+  Future<void> updatePost(PostModel post) async {
+    try {
+      final updated = await _dataSource.updatePost(post);
+      final index = state.posts.indexWhere((p) => p.id == post.id);
+      if (index != -1) {
+        final updatedPosts = List<PostModel>.from(state.posts);
+        updatedPosts[index] = updated;
+        state = state.copyWith(posts: updatedPosts);
+      }
+    } catch (e) {
+      state = state.copyWith(error: 'Failed to update post: ${e.toString()}');
+      rethrow;
     }
   }
 
@@ -152,7 +259,13 @@ class PostsNotifier extends StateNotifier<PostsState> {
 final postsProvider =
     StateNotifierProvider<PostsNotifier, PostsState>((ref) {
   final dataSource = ref.watch(postsMockDataSourceProvider);
-  return PostsNotifier(dataSource);
+  return PostsNotifier(dataSource, ref);
+});
+
+/// Provider for featured seller posts
+final featuredSellerPostsProvider = FutureProvider<List<PostModel>>((ref) {
+  final dataSource = ref.watch(postsMockDataSourceProvider);
+  return dataSource.getFeaturedSellerPosts(10);
 });
 
 final filteredPostsProvider = Provider<List<PostModel>>((ref) {
@@ -160,12 +273,8 @@ final filteredPostsProvider = Provider<List<PostModel>>((ref) {
   return state.posts;
 });
 
-final postByIdProvider = Provider.family<PostModel?, String>((ref, postId) {
-  final posts = ref.watch(filteredPostsProvider);
-  try {
-    return posts.firstWhere((p) => p.id == postId);
-  } catch (_) {
-    return null;
-  }
+final postByIdProvider = FutureProvider.family<PostModel?, String>((ref, postId) async {
+  final dataSource = ref.watch(postsMockDataSourceProvider);
+  return await dataSource.getPostById(postId);
 });
 

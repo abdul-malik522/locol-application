@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:localtrade/core/constants/app_constants.dart';
 import 'package:localtrade/core/widgets/custom_app_bar.dart';
@@ -8,6 +9,7 @@ import 'package:localtrade/core/widgets/error_view.dart';
 import 'package:localtrade/core/widgets/loading_indicator.dart';
 import 'package:localtrade/core/utils/formatters.dart';
 import 'package:localtrade/features/auth/providers/auth_provider.dart';
+import 'package:localtrade/features/orders/data/services/order_export_service.dart';
 import 'package:localtrade/features/orders/presentation/widgets/order_card.dart';
 import 'package:localtrade/features/orders/providers/orders_provider.dart';
 
@@ -96,6 +98,65 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Orders'),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              if (value == 'export') {
+                _showExportDialog(context, ref);
+              } else if (value == 'disputes') {
+                context.push('/disputes');
+              } else if (value == 'addresses') {
+                context.push('/delivery-addresses');
+              } else if (value == 'templates') {
+                context.push('/order-templates');
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'export',
+                child: Row(
+                  children: [
+                    Icon(Icons.download),
+                    SizedBox(width: 8),
+                    Text('Export Orders'),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem(
+                value: 'disputes',
+                child: Row(
+                  children: [
+                    Icon(Icons.gavel_outlined),
+                    SizedBox(width: 8),
+                    Text('Disputes'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'addresses',
+                child: Row(
+                  children: [
+                    Icon(Icons.location_on_outlined),
+                    SizedBox(width: 8),
+                    Text('Delivery Addresses'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'templates',
+                child: Row(
+                  children: [
+                    Icon(Icons.bookmark_outline),
+                    SizedBox(width: 8),
+                    Text('Order Templates'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
@@ -222,5 +283,121 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
         );
       },
     );
+  }
+
+  void _showExportDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Export Orders'),
+        content: const Text(
+          'Choose the format to export your order history. The file will be saved and you can share it.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton.icon(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _exportOrders(context, ref, 'csv');
+            },
+            icon: const Icon(Icons.table_chart),
+            label: const Text('Export as CSV'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _exportOrders(context, ref, 'pdf');
+            },
+            icon: const Icon(Icons.picture_as_pdf),
+            label: const Text('Export as PDF'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _exportOrders(
+    BuildContext context,
+    WidgetRef ref,
+    String format,
+  ) async {
+    try {
+      final currentUser = ref.read(currentUserProvider);
+      if (currentUser == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please login to export orders')),
+        );
+        return;
+      }
+
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Get all orders
+      final ordersState = ref.read(ordersProvider);
+      final orders = ordersState.orders;
+
+      if (orders.isEmpty) {
+        Navigator.pop(context); // Close loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No orders to export')),
+        );
+        return;
+      }
+
+      final exportService = OrderExportService.instance;
+      String filePath;
+
+      if (format == 'csv') {
+        filePath = await exportService.exportToCSV(orders);
+      } else {
+        filePath = await exportService.exportToPDF(orders);
+      }
+
+      Navigator.pop(context); // Close loading
+
+      // Show success dialog with share option
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Export Successful'),
+            content: Text(
+              'Orders exported successfully to:\n${filePath.split('/').last}',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              ),
+              ElevatedButton.icon(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await exportService.shareFile(filePath);
+                },
+                icon: const Icon(Icons.share),
+                label: const Text('Share'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.pop(context); // Close loading if still open
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to export orders: ${e.toString()}')),
+        );
+      }
+    }
   }
 }

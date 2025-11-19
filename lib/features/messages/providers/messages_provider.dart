@@ -34,21 +34,25 @@ class ChatMessagesState {
     this.messages = const [],
     this.isLoading = false,
     this.error,
+    this.typingUsers = const [],
   });
 
   final List<MessageModel> messages;
   final bool isLoading;
   final String? error;
+  final List<String> typingUsers; // List of user IDs who are currently typing
 
   ChatMessagesState copyWith({
     List<MessageModel>? messages,
     bool? isLoading,
     String? error,
+    List<String>? typingUsers,
   }) {
     return ChatMessagesState(
       messages: messages ?? this.messages,
       isLoading: isLoading ?? this.isLoading,
       error: error,
+      typingUsers: typingUsers ?? this.typingUsers,
     );
   }
 }
@@ -61,15 +65,50 @@ class MessagesNotifier extends StateNotifier<MessagesState> {
 
   final MessagesMockDataSource _dataSource;
 
-  Future<void> loadChats(String userId) async {
+  Future<void> loadChats(String userId, {bool includeArchived = false}) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final chats = await _dataSource.getChats(userId);
+      final chats = await _dataSource.getChats(userId, includeArchived: includeArchived);
       state = state.copyWith(chats: chats, isLoading: false);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         error: 'Failed to load chats: ${e.toString()}',
+      );
+    }
+  }
+
+  Future<void> loadArchivedChats(String userId) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final chats = await _dataSource.getArchivedChats(userId);
+      state = state.copyWith(chats: chats, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Failed to load archived chats: ${e.toString()}',
+      );
+    }
+  }
+
+  Future<void> archiveChat(String chatId, String userId, bool archive) async {
+    try {
+      await _dataSource.archiveChat(chatId, userId, archive);
+      await loadChats(userId);
+    } catch (e) {
+      state = state.copyWith(
+        error: 'Failed to archive chat: ${e.toString()}',
+      );
+    }
+  }
+
+  Future<void> muteChat(String chatId, String userId, bool mute) async {
+    try {
+      await _dataSource.muteChat(chatId, userId, mute);
+      await loadChats(userId);
+    } catch (e) {
+      state = state.copyWith(
+        error: 'Failed to mute chat: ${e.toString()}',
       );
     }
   }
@@ -116,10 +155,25 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
   ChatMessagesNotifier(this._dataSource, this._chatId)
       : super(const ChatMessagesState()) {
     loadMessages();
+    _startTypingStatusPolling();
   }
 
   final MessagesMockDataSource _dataSource;
   final String _chatId;
+  Timer? _typingStatusTimer;
+
+  void _startTypingStatusPolling() {
+    // Poll typing status every 500ms
+    _typingStatusTimer = Timer.periodic(const Duration(milliseconds: 500), (_) {
+      _refreshTypingStatus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _typingStatusTimer?.cancel();
+    super.dispose();
+  }
 
   Future<void> loadMessages() async {
     state = state.copyWith(isLoading: true, error: null);
@@ -136,13 +190,52 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
 
   Future<void> sendMessage(MessageModel message) async {
     try {
+      // Stop typing when message is sent
+      await _dataSource.setTypingStatus(_chatId, message.senderId, false);
       final sent = await _dataSource.sendMessage(message);
       state = state.copyWith(
         messages: [...state.messages, sent],
       );
+      await _refreshTypingStatus();
     } catch (e) {
       state = state.copyWith(
         error: 'Failed to send message: ${e.toString()}',
+      );
+    }
+  }
+
+  Future<void> setTypingStatus(String userId, bool isTyping) async {
+    try {
+      await _dataSource.setTypingStatus(_chatId, userId, isTyping);
+      await _refreshTypingStatus();
+    } catch (e) {
+      // Silently fail typing status updates
+      print('Failed to update typing status: $e');
+    }
+  }
+
+  Future<void> _refreshTypingStatus() async {
+    try {
+      final typingUsers = await _dataSource.getTypingUsers(_chatId);
+      state = state.copyWith(typingUsers: typingUsers);
+    } catch (e) {
+      // Silently fail typing status refresh
+      print('Failed to refresh typing status: $e');
+    }
+  }
+
+  Future<void> toggleReaction(String messageId, String emoji, String userId) async {
+    try {
+      final updatedMessage = await _dataSource.toggleReaction(_chatId, messageId, emoji, userId);
+      final updatedMessages = List<MessageModel>.from(state.messages);
+      final index = updatedMessages.indexWhere((m) => m.id == messageId);
+      if (index != -1) {
+        updatedMessages[index] = updatedMessage;
+        state = state.copyWith(messages: updatedMessages);
+      }
+    } catch (e) {
+      state = state.copyWith(
+        error: 'Failed to toggle reaction: ${e.toString()}',
       );
     }
   }
@@ -176,6 +269,100 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
       messageType: MessageType.image,
     );
     await sendMessage(message);
+  }
+
+  Future<void> sendVoiceMessage(
+    String audioUrl,
+    int durationSeconds,
+    String senderId,
+    String senderName,
+  ) async {
+    final message = MessageModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      chatId: _chatId,
+      senderId: senderId,
+      senderName: senderName,
+      audioUrl: audioUrl,
+      durationSeconds: durationSeconds,
+      messageType: MessageType.voice,
+    );
+    await sendMessage(message);
+  }
+
+  Future<void> sendLocationMessage(
+    double latitude,
+    double longitude,
+    String? locationName,
+    String senderId,
+    String senderName,
+  ) async {
+    final message = MessageModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      chatId: _chatId,
+      senderId: senderId,
+      senderName: senderName,
+      latitude: latitude,
+      longitude: longitude,
+      locationName: locationName,
+      messageType: MessageType.location,
+    );
+    await sendMessage(message);
+  }
+
+  Future<void> sendPriceOffer(
+    PriceOfferData priceOffer,
+    String senderId,
+    String senderName,
+  ) async {
+    final message = MessageModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      chatId: _chatId,
+      senderId: senderId,
+      senderName: senderName,
+      messageType: MessageType.priceOffer,
+      priceOfferData: priceOffer.toJson(),
+    );
+    await sendMessage(message);
+  }
+
+  Future<void> respondToPriceOffer(
+    String messageId,
+    PriceOfferStatus status,
+    PriceOfferData? counterOffer,
+  ) async {
+    try {
+      final messageIndex = state.messages.indexWhere((m) => m.id == messageId);
+      if (messageIndex == -1) return;
+
+      final originalMessage = state.messages[messageIndex];
+      if (originalMessage.priceOfferData == null) return;
+
+      final offerData = PriceOfferData.fromJson(originalMessage.priceOfferData!);
+      final updatedOffer = offerData.copyWith(status: status);
+
+      // Update the original message status
+      final updatedMessage = originalMessage.copyWith(
+        priceOfferData: updatedOffer.toJson(),
+      );
+
+      final updatedMessages = List<MessageModel>.from(state.messages);
+      updatedMessages[messageIndex] = updatedMessage;
+
+      // If counter-offering, send a new message
+      if (status == PriceOfferStatus.counterOffered && counterOffer != null) {
+        // Get the current user from the chat to determine sender
+        // For now, we'll need to pass sender info - this is a limitation
+        // In a real app, you'd get this from auth context
+        // For mock, we'll update the state and let the caller send the counter offer
+        state = state.copyWith(messages: updatedMessages);
+      } else {
+        state = state.copyWith(messages: updatedMessages);
+      }
+    } catch (e) {
+      state = state.copyWith(
+        error: 'Failed to respond to price offer: ${e.toString()}',
+      );
+    }
   }
 }
 

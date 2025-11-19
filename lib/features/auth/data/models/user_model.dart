@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:localtrade/core/constants/app_constants.dart';
+import 'package:localtrade/features/profile/data/models/business_hours_model.dart';
+import 'package:localtrade/features/profile/data/models/certification_model.dart';
+import 'package:localtrade/features/profile/data/models/verification_badge_model.dart';
 
 @immutable
 class UserModel {
@@ -20,6 +23,10 @@ class UserModel {
     this.rating = 0.0,
     this.reviewCount = 0,
     this.isActive = true,
+    this.isEmailVerified = false,
+    this.businessHours,
+    this.verificationBadges = const [],
+    this.certifications = const [],
     DateTime? createdAt,
     DateTime? updatedAt,
   })  : createdAt = createdAt ?? DateTime.now(),
@@ -43,6 +50,10 @@ class UserModel {
   final double rating;
   final int reviewCount;
   final bool isActive;
+  final bool isEmailVerified;
+  final BusinessHoursModel? businessHours; // Operating hours for restaurants
+  final List<VerificationBadgeModel> verificationBadges; // Verification badges
+  final List<CertificationModel> certifications; // Certifications (organic, biodynamic, etc.)
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -65,6 +76,10 @@ class UserModel {
     double? rating,
     int? reviewCount,
     bool? isActive,
+    bool? isEmailVerified,
+    BusinessHoursModel? businessHours,
+    List<VerificationBadgeModel>? verificationBadges,
+    List<CertificationModel>? certifications,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -84,6 +99,10 @@ class UserModel {
       rating: rating ?? this.rating,
       reviewCount: reviewCount ?? this.reviewCount,
       isActive: isActive ?? this.isActive,
+      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
+      businessHours: businessHours ?? this.businessHours,
+      verificationBadges: verificationBadges ?? this.verificationBadges,
+      certifications: certifications ?? this.certifications,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
     );
@@ -109,6 +128,18 @@ class UserModel {
       rating: (json['rating'] as num?)?.toDouble() ?? 0,
       reviewCount: json['reviewCount'] as int? ?? 0,
       isActive: json['isActive'] as bool? ?? true,
+      isEmailVerified: json['isEmailVerified'] as bool? ?? false,
+      businessHours: json['businessHours'] != null
+          ? BusinessHoursModel.fromJson(json['businessHours'] as Map<String, dynamic>)
+          : null,
+      verificationBadges: (json['verificationBadges'] as List<dynamic>?)
+              ?.map((e) => VerificationBadgeModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      certifications: (json['certifications'] as List<dynamic>?)
+              ?.map((e) => CertificationModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??
           DateTime.now(),
       updatedAt: DateTime.tryParse(json['updatedAt'] as String? ?? '') ??
@@ -133,9 +164,21 @@ class UserModel {
       'rating': rating,
       'reviewCount': reviewCount,
       'isActive': isActive,
+      'isEmailVerified': isEmailVerified,
+      'businessHours': businessHours?.toJson(),
+      'verificationBadges': verificationBadges.map((b) => b.toJson()).toList(),
+      'certifications': certifications.map((c) => c.toJson()).toList(),
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
+  }
+
+  /// Check if user has any verification badges
+  bool get isVerified => verificationBadges.isNotEmpty;
+
+  /// Check if user has a specific verification type
+  bool hasVerificationType(VerificationType type) {
+    return verificationBadges.any((badge) => badge.type == type);
   }
 }
 

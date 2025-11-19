@@ -20,8 +20,14 @@ class OrderModel {
     required this.totalAmount,
     required this.status,
     required this.deliveryAddress,
+    this.deliveryInstructions,
     this.deliveryDate,
+    this.scheduledDate,
+    this.recurringOrderId,
     this.notes,
+    this.cancellationReason,
+    this.disputeId,
+    this.trackingId,
     this.rating,
     this.review,
     DateTime? createdAt,
@@ -43,8 +49,14 @@ class OrderModel {
   final double totalAmount;
   final OrderStatus status;
   final String deliveryAddress;
+  final String? deliveryInstructions; // Special instructions for delivery (e.g., "Leave at back door", "Ring doorbell")
   final DateTime? deliveryDate;
+  final DateTime? scheduledDate;
+  final String? recurringOrderId; // Link to recurring order configuration
   final String? notes;
+  final String? cancellationReason; // Reason for cancellation (if cancelled)
+  final String? disputeId; // Link to dispute if one has been filed
+  final String? trackingId; // Link to delivery tracking if tracking is active
   final double? rating;
   final String? review;
   final DateTime createdAt;
@@ -69,6 +81,8 @@ class OrderModel {
 
   bool get canRate => status == OrderStatus.completed && rating == null;
 
+  bool get isScheduled => scheduledDate != null && scheduledDate!.isAfter(DateTime.now());
+
   OrderModel copyWith({
     String? id,
     String? orderNumber,
@@ -84,8 +98,14 @@ class OrderModel {
     double? totalAmount,
     OrderStatus? status,
     String? deliveryAddress,
+    String? deliveryInstructions,
     DateTime? deliveryDate,
+    DateTime? scheduledDate,
+    String? recurringOrderId,
     String? notes,
+    String? cancellationReason,
+    String? disputeId,
+    String? trackingId,
     double? rating,
     String? review,
     DateTime? createdAt,
@@ -106,8 +126,14 @@ class OrderModel {
       totalAmount: totalAmount ?? this.totalAmount,
       status: status ?? this.status,
       deliveryAddress: deliveryAddress ?? this.deliveryAddress,
+      deliveryInstructions: deliveryInstructions ?? this.deliveryInstructions,
       deliveryDate: deliveryDate ?? this.deliveryDate,
+      scheduledDate: scheduledDate ?? this.scheduledDate,
+      recurringOrderId: recurringOrderId ?? this.recurringOrderId,
       notes: notes ?? this.notes,
+      cancellationReason: cancellationReason ?? this.cancellationReason,
+      disputeId: disputeId ?? this.disputeId,
+      trackingId: trackingId ?? this.trackingId,
       rating: rating ?? this.rating,
       review: review ?? this.review,
       createdAt: createdAt ?? this.createdAt,
@@ -134,10 +160,18 @@ class OrderModel {
         orElse: () => OrderStatus.pending,
       ),
       deliveryAddress: json['deliveryAddress'] as String,
+      deliveryInstructions: json['deliveryInstructions'] as String?,
       deliveryDate: json['deliveryDate'] != null
           ? DateTime.parse(json['deliveryDate'] as String)
           : null,
+      scheduledDate: json['scheduledDate'] != null
+          ? DateTime.parse(json['scheduledDate'] as String)
+          : null,
+      recurringOrderId: json['recurringOrderId'] as String?,
       notes: json['notes'] as String?,
+      cancellationReason: json['cancellationReason'] as String?,
+      disputeId: json['disputeId'] as String?,
+      trackingId: json['trackingId'] as String?,
       rating: (json['rating'] as num?)?.toDouble(),
       review: json['review'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
@@ -161,8 +195,14 @@ class OrderModel {
       'totalAmount': totalAmount,
       'status': status.name,
       'deliveryAddress': deliveryAddress,
+      'deliveryInstructions': deliveryInstructions,
       'deliveryDate': deliveryDate?.toIso8601String(),
+      'scheduledDate': scheduledDate?.toIso8601String(),
+      'recurringOrderId': recurringOrderId,
       'notes': notes,
+      'cancellationReason': cancellationReason,
+      'disputeId': disputeId,
+      'trackingId': trackingId,
       'rating': rating,
       'review': review,
       'createdAt': createdAt.toIso8601String(),

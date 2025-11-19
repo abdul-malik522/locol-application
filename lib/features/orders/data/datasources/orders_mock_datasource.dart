@@ -2,6 +2,10 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:localtrade/core/constants/app_constants.dart';
+import 'package:localtrade/features/auth/data/datasources/auth_mock_datasource.dart';
+import 'package:localtrade/features/notifications/data/datasources/notifications_mock_datasource.dart';
+import 'package:localtrade/features/notifications/data/models/notification_model.dart';
+import 'package:localtrade/features/orders/data/datasources/delivery_tracking_datasource.dart';
 import 'package:localtrade/features/orders/data/models/order_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -188,6 +192,12 @@ class OrdersMockDataSource {
     return orders;
   }
 
+  /// Get all orders (for internal use, e.g., reviews)
+  Future<List<OrderModel>> getAllOrders() async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    return List<OrderModel>.from(_orders);
+  }
+
   Future<OrderModel?> getOrderById(String orderId) async {
     await Future.delayed(const Duration(milliseconds: 200));
     try {
@@ -212,8 +222,25 @@ class OrdersMockDataSource {
     if (index == -1) throw Exception('Order not found');
 
     final order = _orders[index];
+    
+    // Start tracking when order is accepted
+    String? trackingId = order.trackingId;
+    if (newStatus == OrderStatus.accepted && trackingId == null) {
+      // Extract destination coordinates from delivery address (mock)
+      // In a real app, you'd geocode the address
+      final trackingDataSource = DeliveryTrackingDataSource.instance;
+      final tracking = await trackingDataSource.startTracking(
+        orderId,
+        37.7849, // Mock destination lat
+        -122.4094, // Mock destination lon
+        order.deliveryAddress,
+      );
+      trackingId = orderId; // Use orderId as trackingId for simplicity
+    }
+
     final updated = order.copyWith(
       status: newStatus,
+      trackingId: trackingId,
       deliveryDate: newStatus == OrderStatus.accepted
           ? DateTime.now().add(const Duration(days: 1))
           : order.deliveryDate,
@@ -231,7 +258,7 @@ class OrdersMockDataSource {
     final order = _orders[index];
     final updated = order.copyWith(
       status: OrderStatus.cancelled,
-      notes: reason,
+      cancellationReason: reason,
     );
 
     _orders[index] = updated;
@@ -254,7 +281,51 @@ class OrdersMockDataSource {
     );
 
     _orders[index] = updated;
+
+    // Create review notification for the person being reviewed
+    await _createReviewNotification(order, rating, review);
+
     return updated;
+  }
+
+  /// Create a notification when someone receives a review
+  Future<void> _createReviewNotification(
+    OrderModel order,
+    double rating,
+    String review,
+  ) async {
+    try {
+      // Determine who reviewed and who was reviewed
+      // Typically, buyers review sellers, so notification goes to seller
+      final reviewedUserId = order.sellerId; // Person being reviewed
+      final reviewerName = order.buyerName; // Person who wrote the review
+      final reviewerId = order.buyerId;
+
+      // Get reviewer's profile image from auth datasource
+      final authDataSource = AuthMockDataSource.instance;
+      final reviewer = await authDataSource.getUserById(reviewerId);
+      final reviewerImageUrl = reviewer?.profileImageUrl;
+
+      // Create notification message
+      final ratingStars = '⭐' * rating.round();
+      final reviewText = review.isNotEmpty
+          ? ' "$review"'
+          : '';
+      final body = '$reviewerName rated you $ratingStars for order ${order.orderNumber}$reviewText';
+
+      // Create notification for the person being reviewed
+      await NotificationsMockDataSource.instance.createNotification(
+        userId: reviewedUserId,
+        type: NotificationType.review,
+        title: 'New Review',
+        body: body,
+        imageUrl: reviewerImageUrl,
+        relatedId: order.id, // Link to order details
+      );
+    } catch (e) {
+      // Silently fail - notification creation shouldn't break rating functionality
+      print('Failed to create review notification: $e');
+    }
   }
 
   Future<OrderModel> reorder(String orderId) async {
@@ -273,6 +344,51 @@ class OrdersMockDataSource {
 
     _orders.insert(0, newOrder);
     return newOrder;
+  }
+
+  Future<OrderModel> updateOrderNotes(String orderId, String? notes) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final index = _orders.indexWhere((order) => order.id == orderId);
+    if (index == -1) throw Exception('Order not found');
+
+    final order = _orders[index];
+    final updated = order.copyWith(notes: notes);
+
+    _orders[index] = updated;
+    return updated;
+  }
+
+  Future<OrderModel> scheduleOrder(String orderId, DateTime scheduledDate) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final index = _orders.indexWhere((order) => order.id == orderId);
+    if (index == -1) throw Exception('Order not found');
+
+    final order = _orders[index];
+    final updated = order.copyWith(scheduledDate: scheduledDate);
+
+    _orders[index] = updated;
+    return updated;
+  }
+
+  Future<OrderModel> cancelScheduledOrder(String orderId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final index = _orders.indexWhere((order) => order.id == orderId);
+    if (index == -1) throw Exception('Order not found');
+
+    final order = _orders[index];
+    final updated = order.copyWith(scheduledDate: null);
+
+    _orders[index] = updated;
+    return updated;
+  }
+
+  Future<OrderModel> updateOrder(OrderModel updatedOrder) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final index = _orders.indexWhere((order) => order.id == updatedOrder.id);
+    if (index == -1) throw Exception('Order not found');
+
+    _orders[index] = updatedOrder;
+    return updatedOrder;
   }
 }
 

@@ -12,9 +12,17 @@ import 'package:localtrade/core/widgets/custom_text_field.dart';
 import 'package:localtrade/core/widgets/error_view.dart';
 import 'package:localtrade/core/widgets/loading_indicator.dart';
 import 'package:localtrade/features/auth/providers/auth_provider.dart';
+import 'package:localtrade/features/home/data/datasources/post_reports_datasource.dart';
 import 'package:localtrade/features/home/data/models/comment_model.dart';
-import 'package:localtrade/features/home/providers/posts_provider.dart';
 import 'package:localtrade/features/home/data/models/post_model.dart';
+import 'package:localtrade/features/home/data/models/post_report_model.dart';
+import 'package:localtrade/features/home/data/services/post_share_service.dart';
+import 'package:localtrade/features/home/data/models/price_alert_model.dart';
+import 'package:localtrade/features/home/data/models/stock_notification_model.dart';
+import 'package:localtrade/features/home/providers/favorites_provider.dart';
+import 'package:localtrade/features/home/providers/price_alerts_provider.dart';
+import 'package:localtrade/features/home/providers/posts_provider.dart';
+import 'package:localtrade/features/home/providers/stock_notifications_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class PostDetailScreen extends ConsumerStatefulWidget {
@@ -82,6 +90,122 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     await _loadComments();
   }
 
+  Future<void> _showDeleteConfirmation(
+    BuildContext context,
+    WidgetRef ref,
+    String postId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Post'),
+        content: const Text(
+          'Are you sure you want to delete this post? '
+          'This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      try {
+        await ref.read(postsProvider.notifier).deletePost(postId);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Post deleted successfully')),
+          );
+          context.pop(); // Navigate back after deletion
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to delete post: ${e.toString()}')),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _archivePost(
+    BuildContext context,
+    WidgetRef ref,
+    String postId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Archive Post'),
+        content: const Text(
+          'This post will be hidden from the feed but can be restored later. '
+          'You can view archived posts in your profile.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Archive'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      try {
+        await ref.read(postsProvider.notifier).archivePost(postId);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Post archived successfully')),
+          );
+          context.pop(); // Navigate back after archiving
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to archive post: ${e.toString()}')),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _unarchivePost(
+    BuildContext context,
+    WidgetRef ref,
+    String postId,
+  ) async {
+    try {
+      await ref.read(postsProvider.notifier).unarchivePost(postId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Post unarchived successfully')),
+        );
+        // Refresh the post detail
+        setState(() {});
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to unarchive post: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final postId = _getPostId();
@@ -91,22 +215,148 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
       );
     }
 
-    final post = ref.watch(postByIdProvider(postId));
+    final postAsync = ref.watch(postByIdProvider(postId));
     final currentUser = ref.read(currentUserProvider);
-    final isRestaurantViewingSeller =
-        currentUser?.isRestaurant == true && post?.userRole == UserRole.seller;
 
-    if (post == null) {
-      return const Scaffold(
+    return postAsync.when(
+      data: (post) {
+        if (post == null) {
+          return const Scaffold(
+            appBar: CustomAppBar(title: 'Post Details'),
+            body: Center(child: Text('Post not found')),
+          );
+        }
+
+        final isRestaurantViewingSeller =
+            currentUser?.isRestaurant == true && post.userRole == UserRole.seller;
+        final isOwner = currentUser?.id == post.userId;
+
+        return _buildPostDetail(context, ref, post, isOwner, isRestaurantViewingSeller);
+      },
+      loading: () => const Scaffold(
         appBar: CustomAppBar(title: 'Post Details'),
         body: LoadingIndicator(),
-      );
-    }
+      ),
+      error: (error, _) => Scaffold(
+        appBar: const CustomAppBar(title: 'Post Details'),
+        body: ErrorView(error: error.toString()),
+      ),
+    );
+  }
 
+  Widget _buildPostDetail(
+    BuildContext context,
+    WidgetRef ref,
+    PostModel post,
+    bool isOwner,
+    bool isRestaurantViewingSeller,
+  ) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Post Details'),
+      appBar: CustomAppBar(
+        title: post.isArchived ? 'Archived Post' : 'Post Details',
+        actions: [
+          Consumer(
+            builder: (context, ref, _) {
+              final currentUser = ref.watch(currentUserProvider);
+              if (currentUser == null) return const SizedBox.shrink();
+              
+              final favoritesAsync = ref.watch(favoritesNotifierProvider(currentUser.id));
+              final isFavorited = favoritesAsync.valueOrNull?.contains(post.id) ?? false;
+              
+              return IconButton(
+                icon: Icon(
+                  isFavorited ? Icons.bookmark : Icons.bookmark_border,
+                  color: isFavorited ? Colors.amber : null,
+                ),
+                onPressed: () async {
+                  final favoritesNotifier = ref.read(favoritesNotifierProvider(currentUser.id).notifier);
+                  try {
+                    await favoritesNotifier.toggleFavorite(post.id);
+                    HapticFeedback.lightImpact();
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            isFavorited
+                                ? 'Removed from favorites'
+                                : 'Added to favorites',
+                          ),
+                          duration: const Duration(seconds: 1),
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to update favorites: ${e.toString()}')),
+                      );
+                    }
+                  }
+                },
+                tooltip: isFavorited ? 'Remove from favorites' : 'Add to favorites',
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: () => _showShareDialog(context, post),
+            tooltip: 'Share Post',
+          ),
+          if (!isOwner)
+            IconButton(
+              icon: const Icon(Icons.flag_outlined),
+              onPressed: () => _showReportDialog(context, ref, post),
+              tooltip: 'Report Post',
+            ),
+          if (isOwner) ...[
+            IconButton(
+              icon: Icon(post.isArchived ? Icons.unarchive : Icons.archive),
+              onPressed: () => post.isArchived
+                  ? _unarchivePost(context, ref, post.id)
+                  : _archivePost(context, ref, post.id),
+              tooltip: post.isArchived ? 'Unarchive Post' : 'Archive Post',
+            ),
+            if (!post.isArchived)
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () => context.push('/edit-post/${post.id}'),
+                tooltip: 'Edit Post',
+              ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () => _showDeleteConfirmation(context, ref, post.id),
+              tooltip: 'Delete Post',
+            ),
+          ],
+        ],
+      ),
       body: Column(
         children: [
+          if (post.isArchived)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              color: Colors.orange.withOpacity(0.1),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.archive,
+                    color: Colors.orange.shade700,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'This post is archived and hidden from the feed',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.orange.shade700,
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           Expanded(
             child: SingleChildScrollView(
               controller: _scrollController,
@@ -115,7 +365,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                 children: [
                   _buildImageCarousel(post),
                   _buildHeader(context, post),
-                  _buildContent(context, post),
+                  _buildContent(context, ref, post, isOwner),
                   _buildCommentsSection(context),
                 ],
               ),
@@ -238,7 +488,8 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     );
   }
 
-  Widget _buildContent(BuildContext context, PostModel post) {
+  Widget _buildContent(BuildContext context, WidgetRef ref, PostModel post, bool isOwner) {
+    final currentUser = ref.watch(currentUserProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -344,6 +595,28 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
               Text('${post.commentCount} comments'),
             ],
           ),
+          if (post.price != null && !isOwner && currentUser?.isRestaurant == true) ...[
+            const Divider(height: 32),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.notifications_outlined),
+                    label: const Text('Price Alert'),
+                    onPressed: () => _showPriceAlertDialog(context, ref, post),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.inventory_2_outlined),
+                    label: const Text('Stock Alert'),
+                    onPressed: () => _showStockNotificationDialog(context, ref, post),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -431,6 +704,673 @@ class _CommentCard extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+  void _showShareDialog(BuildContext context, PostModel post) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Share Post',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ),
+            const Divider(),
+            GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 3,
+              padding: const EdgeInsets.all(16),
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              children: [
+                _buildShareOption(
+                  context,
+                  SharePlatform.native,
+                  Icons.share,
+                  () => _sharePost(context, post, SharePlatform.native),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.whatsapp,
+                  Icons.chat,
+                  () => _sharePost(context, post, SharePlatform.whatsapp),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.facebook,
+                  Icons.facebook,
+                  () => _sharePost(context, post, SharePlatform.facebook),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.twitter,
+                  Icons.alternate_email,
+                  () => _sharePost(context, post, SharePlatform.twitter),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.email,
+                  Icons.email,
+                  () => _sharePost(context, post, SharePlatform.email),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.sms,
+                  Icons.sms,
+                  () => _sharePost(context, post, SharePlatform.sms),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.copyLink,
+                  Icons.link,
+                  () => _sharePost(context, post, SharePlatform.copyLink),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShareOption(
+    BuildContext context,
+    SharePlatform platform,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: () {
+        Navigator.pop(context);
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 32,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              platform.label,
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _sharePost(
+    BuildContext context,
+    PostModel post,
+    SharePlatform platform,
+  ) async {
+    try {
+      final shareService = PostShareService.instance;
+      await shareService.shareToPlatform(post, platform);
+
+      if (platform == SharePlatform.copyLink }} mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Link copied to clipboard!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to share: ${e.toString()}')),
+        );
+      }
+    }
+  }
+}
+  void _showShareDialog(BuildContext context, PostModel post) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Share Post',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ),
+            const Divider(),
+            GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 3,
+              padding: const EdgeInsets.all(16),
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              children: [
+                _buildShareOption(
+                  context,
+                  SharePlatform.native,
+                  Icons.share,
+                  () => _sharePost(context, post, SharePlatform.native),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.whatsapp,
+                  Icons.chat,
+                  () => _sharePost(context, post, SharePlatform.whatsapp),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.facebook,
+                  Icons.facebook,
+                  () => _sharePost(context, post, SharePlatform.facebook),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.twitter,
+                  Icons.alternate_email,
+                  () => _sharePost(context, post, SharePlatform.twitter),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.email,
+                  Icons.email,
+                  () => _sharePost(context, post, SharePlatform.email),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.sms,
+                  Icons.sms,
+                  () => _sharePost(context, post, SharePlatform.sms),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.copyLink,
+                  Icons.link,
+                  () => _sharePost(context, post, SharePlatform.copyLink),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShareOption(
+    BuildContext context,
+    SharePlatform platform,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: () {
+        Navigator.pop(context);
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 32,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              platform.label,
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _sharePost(
+    BuildContext context,
+    PostModel post,
+    SharePlatform platform,
+  ) async {
+    try {
+      final shareService = PostShareService.instance;
+      await shareService.shareToPlatform(post, platform);
+
+      if (platform == SharePlatform.copyLink && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Link copied to clipboard!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to share: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
+
+  Future<void> _showReportDialog(
+    BuildContext context,
+    WidgetRef ref,
+    PostModel post,
+  ) async {
+    final currentUser = ref.read(currentUserProvider);
+    if (currentUser == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please login to report posts')),
+        );
+      }
+      return;
+    }
+
+    // Check if user already reported this post
+    final reportsDataSource = PostReportsDataSource.instance;
+    final alreadyReported = await reportsDataSource.hasUserReportedPost(
+      post.id,
+      currentUser.id,
+    );
+
+    if (alreadyReported && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('You have already reported this post. Our team will review it.'),
+        ),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+
+    final formKey = GlobalKey<FormState>();
+    PostReportReason? selectedReason;
+    final descriptionController = TextEditingController();
+    String? customReason;
+
+    await showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Report Post'),
+          content: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Help us understand the problem. Why are you reporting this post?',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 16),
+                  ...PostReportReason.values.map((reason) {
+                    return RadioListTile<PostReportReason>(
+                      title: Row(
+                        children: [
+                          Icon(reason.icon, size: 20),
+                          const SizedBox(width: 8),
+                          Expanded(child: Text(reason.label)),
+                        ],
+                      ),
+                      value: reason,
+                      groupValue: selectedReason,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedReason = value;
+                          if (value != PostReportReason.other) {
+                            customReason = null;
+                          }
+                        });
+                      },
+                      contentPadding: EdgeInsets.zero,
+                    );
+                  }),
+                  if (selectedReason == PostReportReason.other) ...[
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: descriptionController,
+                      decoration: const InputDecoration(
+                        labelText: 'Please specify the reason',
+                        hintText: 'Describe why you are reporting this post',
+                        border: OutlineInputBorder(),
+                      ),
+                      maxLines: 3,
+                      validator: (value) {
+                        if (selectedReason == PostReportReason.other &&
+                            (value == null || value.trim().isEmpty)) {
+                          return 'Please provide a reason';
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        customReason = value.trim();
+                      },
+                    ),
+                  ] else if (selectedReason != null) ...[
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: descriptionController,
+                      decoration: const InputDecoration(
+                        labelText: 'Additional details (optional)',
+                        hintText: 'Provide any additional information that might help',
+                        border: OutlineInputBorder(),
+                      ),
+                      maxLines: 3,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (formKey.currentState!.validate() && selectedReason != null) {
+                  final finalDescription = selectedReason == PostReportReason.other
+                      ? (customReason ?? descriptionController.text.trim())
+                      : descriptionController.text.trim().isEmpty
+                          ? selectedReason.label
+                          : descriptionController.text.trim();
+
+                  try {
+                    final report = PostReportModel(
+                      id: '', // Will be generated by datasource
+                      postId: post.id,
+                      reportedBy: currentUser.id,
+                      reportedByName: currentUser.name,
+                      reason: selectedReason!,
+                      description: finalDescription,
+                    );
+
+                    await reportsDataSource.fileReport(report);
+
+                    if (mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Thank you for your report. Our team will review it shortly.',
+                          ),
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to submit report: ${e.toString()}')),
+                      );
+                    }
+                  }
+                }
+              },
+              child: const Text('Submit Report'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    descriptionController.dispose();
+  }
+
+  Future<void> _showPriceAlertDialog(
+    BuildContext context,
+    WidgetRef ref,
+    PostModel post,
+  ) async {
+    final currentUser = ref.read(currentUserProvider);
+    if (currentUser == null || post.price == null) return;
+
+    final priceAlertsNotifier = ref.read(priceAlertsProvider(currentUser.id).notifier);
+    final hasAlert = await priceAlertsNotifier.hasAlertForPost(post.id);
+
+    if (hasAlert) {
+      // Show existing alert info
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Price Alert Active'),
+          content: const Text('You already have a price alert set for this product.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                final alertsState = await ref.read(priceAlertsProvider(currentUser.id).future);
+                final alert = alertsState.alerts.firstWhere((a) => a.postId == post.id && a.isActive);
+                await priceAlertsNotifier.deleteAlert(alert.id);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Price alert removed')),
+                  );
+                }
+              },
+              child: const Text('Remove Alert', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    final targetPriceController = TextEditingController(
+      text: (post.price! * 0.9).toStringAsFixed(2), // Default to 10% discount
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Set Price Alert'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Current Price: \$${post.price!.toStringAsFixed(2)}'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: targetPriceController,
+              decoration: const InputDecoration(
+                labelText: 'Alert me when price drops to',
+                prefixText: '\$',
+                hintText: '0.00',
+              ),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'You will be notified when the price drops to or below this amount.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final targetPrice = double.tryParse(targetPriceController.text);
+              if (targetPrice == null || targetPrice >= post.price!) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Target price must be less than current price')),
+                );
+                return;
+              }
+
+              final alert = PriceAlertModel(
+                id: const Uuid().v4(),
+                userId: currentUser.id,
+                postId: post.id,
+                postTitle: post.title,
+                currentPrice: post.price!,
+                targetPrice: targetPrice,
+              );
+
+              await priceAlertsNotifier.createAlert(alert);
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Price alert set!')),
+                );
+              }
+            },
+            child: const Text('Set Alert'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showStockNotificationDialog(
+    BuildContext context,
+    WidgetRef ref,
+    PostModel post,
+  ) async {
+    final currentUser = ref.read(currentUserProvider);
+    if (currentUser == null) return;
+
+    // Check if post is out of stock (quantity is null or empty)
+    final isOutOfStock = post.quantity == null || post.quantity!.isEmpty || post.quantity == '0';
+
+    if (!isOutOfStock) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Product In Stock'),
+          content: const Text('This product is currently in stock. Stock notifications are only available for out-of-stock items.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    final stockNotificationsNotifier = ref.read(stockNotificationsProvider(currentUser.id).notifier);
+    final hasNotification = await stockNotificationsNotifier.hasNotificationForPost(post.id);
+
+    if (hasNotification) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Stock Notification Active'),
+          content: const Text('You already have a stock notification set for this product.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                final notificationsState = await ref.read(stockNotificationsProvider(currentUser.id).future);
+                final notification = notificationsState.notifications.firstWhere((n) => n.postId == post.id && n.isActive);
+                await stockNotificationsNotifier.deleteNotification(notification.id);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Stock notification removed')),
+                  );
+                }
+              },
+              child: const Text('Remove Notification', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Set Stock Notification'),
+        content: const Text('You will be notified when this product becomes available again.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final notification = StockNotificationModel(
+                id: const Uuid().v4(),
+                userId: currentUser.id,
+                postId: post.id,
+                postTitle: post.title,
+                wasOutOfStock: true,
+              );
+
+              await stockNotificationsNotifier.createNotification(notification);
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Stock notification set!')),
+                );
+              }
+            },
+            child: const Text('Set Notification'),
           ),
         ],
       ),

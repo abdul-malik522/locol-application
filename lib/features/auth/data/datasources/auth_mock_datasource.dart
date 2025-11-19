@@ -1,7 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:localtrade/core/constants/app_constants.dart';
+import 'package:localtrade/features/auth/data/datasources/two_factor_auth_service.dart';
+import 'package:localtrade/features/auth/data/models/two_factor_auth_model.dart';
 import 'package:localtrade/features/auth/data/models/user_model.dart';
+import 'package:localtrade/features/profile/data/models/business_hours_model.dart';
+import 'package:localtrade/features/profile/data/models/certification_model.dart';
+import 'package:localtrade/features/profile/data/models/verification_badge_model.dart';
 import 'package:uuid/uuid.dart';
 
 class AuthMockDataSource {
@@ -24,6 +30,26 @@ class AuthMockDataSource {
       longitude: -122.4194,
       rating: 4.8,
       reviewCount: 120,
+      verificationBadges: [
+        VerificationBadgeModel(
+          type: VerificationType.business,
+          verifiedAt: DateTime.now().subtract(const Duration(days: 90)),
+          verifiedBy: 'admin',
+        ),
+      ],
+      certifications: [
+        CertificationModel(
+          type: CertificationType.organic,
+          certificationNumber: 'USDA-ORG-2024-001',
+          issuingOrganization: 'USDA',
+          issuedDate: DateTime.now().subtract(const Duration(days: 180)),
+          expiryDate: DateTime.now().add(const Duration(days: 185)),
+        ),
+        CertificationModel(
+          type: CertificationType.local,
+          issuedDate: DateTime.now().subtract(const Duration(days: 365)),
+        ),
+      ],
     ),
     UserModel(
       id: 'user-002',
@@ -39,6 +65,19 @@ class AuthMockDataSource {
       longitude: -122.6784,
       rating: 4.7,
       reviewCount: 95,
+      certifications: [
+        CertificationModel(
+          type: CertificationType.organic,
+          certificationNumber: 'USDA-ORG-2024-045',
+          issuingOrganization: 'USDA',
+          issuedDate: DateTime.now().subtract(const Duration(days: 120)),
+          expiryDate: DateTime.now().add(const Duration(days: 245)),
+        ),
+        CertificationModel(
+          type: CertificationType.sustainable,
+          issuedDate: DateTime.now().subtract(const Duration(days: 200)),
+        ),
+      ],
     ),
     UserModel(
       id: 'user-003',
@@ -54,6 +93,19 @@ class AuthMockDataSource {
       longitude: -97.7431,
       rating: 4.6,
       reviewCount: 80,
+      certifications: [
+        CertificationModel(
+          type: CertificationType.grassFed,
+          certificationNumber: 'GF-2024-012',
+          issuingOrganization: 'American Grassfed Association',
+          issuedDate: DateTime.now().subtract(const Duration(days: 60)),
+          expiryDate: DateTime.now().add(const Duration(days: 305)),
+        ),
+        CertificationModel(
+          type: CertificationType.freeRange,
+          issuedDate: DateTime.now().subtract(const Duration(days: 90)),
+        ),
+      ],
     ),
     UserModel(
       id: 'user-004',
@@ -69,6 +121,59 @@ class AuthMockDataSource {
       longitude: -122.3321,
       rating: 4.9,
       reviewCount: 210,
+      verificationBadges: [
+        VerificationBadgeModel(
+          type: VerificationType.business,
+          verifiedAt: DateTime.now().subtract(const Duration(days: 30)),
+          verifiedBy: 'admin',
+        ),
+      ],
+      businessHours: BusinessHoursModel(
+        hours: [
+          DayHours(
+            day: DayOfWeek.monday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 11, minute: 0),
+            closeTime: const TimeOfDay(hour: 22, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.tuesday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 11, minute: 0),
+            closeTime: const TimeOfDay(hour: 22, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.wednesday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 11, minute: 0),
+            closeTime: const TimeOfDay(hour: 22, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.thursday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 11, minute: 0),
+            closeTime: const TimeOfDay(hour: 22, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.friday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 11, minute: 0),
+            closeTime: const TimeOfDay(hour: 23, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.saturday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 10, minute: 0),
+            closeTime: const TimeOfDay(hour: 23, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.sunday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 10, minute: 0),
+            closeTime: const TimeOfDay(hour: 21, minute: 0),
+          ),
+        ],
+      ),
     ),
     UserModel(
       id: 'user-005',
@@ -84,6 +189,59 @@ class AuthMockDataSource {
       longitude: -71.0589,
       rating: 4.7,
       reviewCount: 150,
+      verificationBadges: [
+        VerificationBadgeModel(
+          type: VerificationType.business,
+          verifiedAt: DateTime.now().subtract(const Duration(days: 60)),
+          verifiedBy: 'admin',
+        ),
+        VerificationBadgeModel(
+          type: VerificationType.premium,
+          verifiedAt: DateTime.now().subtract(const Duration(days: 15)),
+          verifiedBy: 'system',
+        ),
+      ],
+      businessHours: BusinessHoursModel(
+        hours: [
+          DayHours(day: DayOfWeek.monday, isOpen: false),
+          DayHours(
+            day: DayOfWeek.tuesday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 17, minute: 0),
+            closeTime: const TimeOfDay(hour: 22, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.wednesday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 17, minute: 0),
+            closeTime: const TimeOfDay(hour: 22, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.thursday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 17, minute: 0),
+            closeTime: const TimeOfDay(hour: 22, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.friday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 17, minute: 0),
+            closeTime: const TimeOfDay(hour: 23, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.saturday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 17, minute: 0),
+            closeTime: const TimeOfDay(hour: 23, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.sunday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 16, minute: 0),
+            closeTime: const TimeOfDay(hour: 21, minute: 0),
+          ),
+        ],
+      ),
     ),
     UserModel(
       id: 'user-006',
@@ -99,6 +257,47 @@ class AuthMockDataSource {
       longitude: -104.9903,
       rating: 4.5,
       reviewCount: 130,
+      businessHours: BusinessHoursModel(
+        hours: [
+          DayHours(
+            day: DayOfWeek.monday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 11, minute: 0),
+            closeTime: const TimeOfDay(hour: 21, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.tuesday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 11, minute: 0),
+            closeTime: const TimeOfDay(hour: 21, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.wednesday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 11, minute: 0),
+            closeTime: const TimeOfDay(hour: 21, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.thursday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 11, minute: 0),
+            closeTime: const TimeOfDay(hour: 21, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.friday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 11, minute: 0),
+            closeTime: const TimeOfDay(hour: 22, minute: 0),
+          ),
+          DayHours(
+            day: DayOfWeek.saturday,
+            isOpen: true,
+            openTime: const TimeOfDay(hour: 11, minute: 0),
+            closeTime: const TimeOfDay(hour: 22, minute: 0),
+          ),
+          DayHours(day: DayOfWeek.sunday, isOpen: false),
+        ],
+      ),
     ),
     UserModel(
       id: 'user-007',
@@ -207,6 +406,8 @@ class AuthMockDataSource {
     if (!_users.contains(user)) {
       _users.add(user);
     }
+    // Store password for change password functionality
+    _storePassword(user.id, password);
     return user;
   }
 
@@ -241,11 +442,25 @@ class AuthMockDataSource {
       longitude: businessDetails?['longitude'] as double?,
     );
     _users.add(user);
+    // Store password for change password functionality
+    _storePassword(user.id, password);
+    // Send verification email
+    await sendVerificationEmail(normalizedEmail);
     return user;
   }
 
   Future<UserModel?> getCurrentUser(String userId) async {
     await Future.delayed(const Duration(milliseconds: 400));
+    try {
+      return _users.firstWhere((user) => user.id == userId);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Get user by ID
+  Future<UserModel?> getUserById(String userId) async {
+    await Future.delayed(const Duration(milliseconds: 100));
     try {
       return _users.firstWhere((user) => user.id == userId);
     } catch (_) {
@@ -286,5 +501,545 @@ class AuthMockDataSource {
   }
 
   List<UserModel> get allUsers => List.unmodifiable(_users);
+
+  /// Delete a user account permanently
+  /// This removes the user from the system
+  Future<void> deleteAccount(String userId) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    _users.removeWhere((user) => user.id == userId);
+    // Also remove password if stored
+    _passwords.remove(userId);
+  }
+
+  // Password reset token storage (in-memory for mock)
+  final Map<String, String> _resetTokens = {}; // email -> token
+  final Map<String, DateTime> _resetTokenExpiry = {}; // email -> expiry
+
+  Future<void> requestPasswordReset(String email) async {
+    await Future.delayed(const Duration(seconds: 1));
+    final normalizedEmail = email.trim().toLowerCase();
+    
+    // Check if user exists
+    final userExists = _users.any(
+      (u) => u.email.toLowerCase() == normalizedEmail,
+    );
+    
+    if (!userExists) {
+      // For security, don't reveal if email exists or not
+      // Just simulate sending email
+      await Future.delayed(const Duration(milliseconds: 500));
+      return;
+    }
+
+    // Generate reset token
+    final token = _uuid.v4();
+    _resetTokens[normalizedEmail] = token;
+    _resetTokenExpiry[normalizedEmail] = DateTime.now().add(
+      const Duration(hours: 1), // Token expires in 1 hour
+    );
+
+    // In a real app, this would send an email
+    // For mock, we'll just log it (in production, email service would be called)
+    print('Password reset email sent to $normalizedEmail');
+    print('Reset token: $token (for testing only)');
+  }
+
+  Future<void> resetPassword({
+    required String email,
+    required String token,
+    required String newPassword,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+    final normalizedEmail = email.trim().toLowerCase();
+
+    // Validate token
+    final storedToken = _resetTokens[normalizedEmail];
+    final expiry = _resetTokenExpiry[normalizedEmail];
+
+    if (storedToken == null || storedToken != token) {
+      throw Exception('Invalid or expired reset token.');
+    }
+
+    if (expiry == null || expiry.isBefore(DateTime.now())) {
+      _resetTokens.remove(normalizedEmail);
+      _resetTokenExpiry.remove(normalizedEmail);
+      throw Exception('Reset token has expired. Please request a new one.');
+    }
+
+    // Find user and update (in real app, password would be hashed)
+    final userIndex = _users.indexWhere(
+      (u) => u.email.toLowerCase() == normalizedEmail,
+    );
+
+    if (userIndex == -1) {
+      throw Exception('User not found.');
+    }
+
+    // In a real app, we would hash the password here
+    // For mock, we just store it (not recommended for production)
+    print('Password reset for $normalizedEmail (mock - password not actually stored)');
+
+    // Clean up token
+    _resetTokens.remove(normalizedEmail);
+    _resetTokenExpiry.remove(normalizedEmail);
+  }
+
+  // Helper method to get reset token for testing (should not exist in production)
+  String? getResetTokenForEmail(String email) {
+    return _resetTokens[email.trim().toLowerCase()];
+  }
+
+  // Password storage (in-memory for mock - in production, passwords would be hashed)
+  final Map<String, String> _passwords = {}; // userId -> password (hashed in production)
+
+  // Store password for a user (called during registration/login)
+  void _storePassword(String userId, String password) {
+    // In production, this would hash the password
+    _passwords[userId] = password;
+  }
+
+  // Verify current password
+  Future<bool> verifyPassword(String userId, String password) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final storedPassword = _passwords[userId];
+    
+    // If no password is stored (for existing mock users), allow any password for testing
+    if (storedPassword == null) {
+      // For existing mock users without stored passwords, accept any password
+      // In production, this would never happen
+      return true;
+    }
+    
+    // In production, this would compare hashed passwords
+    return storedPassword == password;
+  }
+
+  // Change password
+  Future<void> changePassword({
+    required String userId,
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+
+    // Verify current password
+    final isValid = await verifyPassword(userId, currentPassword);
+    if (!isValid) {
+      throw Exception('Current password is incorrect.');
+    }
+
+    // Check if new password is different
+    final storedPassword = _passwords[userId];
+    if (storedPassword != null && storedPassword == newPassword) {
+      throw Exception('New password must be different from current password.');
+    }
+
+    // Update password (in production, this would hash the password)
+    _storePassword(userId, newPassword);
+    print('Password changed for user $userId (mock - password stored in memory)');
+  }
+
+  // Initialize password for existing users (for testing)
+  void initializePasswordForUser(String userId, String password) {
+    if (!_passwords.containsKey(userId)) {
+      _storePassword(userId, password);
+    }
+  }
+
+  // Email verification token storage (in-memory for mock)
+  final Map<String, String> _verificationTokens = {}; // email -> token
+  final Map<String, DateTime> _verificationTokenExpiry = {}; // email -> expiry
+
+  // Send verification email
+  Future<void> sendVerificationEmail(String email) async {
+    await Future.delayed(const Duration(seconds: 1));
+    final normalizedEmail = email.trim().toLowerCase();
+
+    // Generate verification token
+    final token = _uuid.v4();
+    _verificationTokens[normalizedEmail] = token;
+    _verificationTokenExpiry[normalizedEmail] = DateTime.now().add(
+      const Duration(days: 7), // Token expires in 7 days
+    );
+
+    // In a real app, this would send an email
+    // For mock, we'll just log it
+    print('Verification email sent to $normalizedEmail');
+    print('Verification token: $token (for testing only)');
+  }
+
+  // Verify email with token
+  Future<void> verifyEmail({
+    required String email,
+    required String token,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+    final normalizedEmail = email.trim().toLowerCase();
+
+    // Validate token
+    final storedToken = _verificationTokens[normalizedEmail];
+    final expiry = _verificationTokenExpiry[normalizedEmail];
+
+    if (storedToken == null || storedToken != token) {
+      throw Exception('Invalid or expired verification token.');
+    }
+
+    if (expiry == null || expiry.isBefore(DateTime.now())) {
+      _verificationTokens.remove(normalizedEmail);
+      _verificationTokenExpiry.remove(normalizedEmail);
+      throw Exception('Verification token has expired. Please request a new one.');
+    }
+
+    // Find user and mark email as verified
+    final userIndex = _users.indexWhere(
+      (u) => u.email.toLowerCase() == normalizedEmail,
+    );
+
+    if (userIndex == -1) {
+      throw Exception('User not found.');
+    }
+
+    final user = _users[userIndex];
+    _users[userIndex] = user.copyWith(isEmailVerified: true);
+
+    // Clean up token
+    _verificationTokens.remove(normalizedEmail);
+    _verificationTokenExpiry.remove(normalizedEmail);
+
+    print('Email verified for $normalizedEmail');
+  }
+
+  // Resend verification email
+  Future<void> resendVerificationEmail(String email) async {
+    await sendVerificationEmail(email);
+  }
+
+  // Helper method to get verification token for testing (should not exist in production)
+  String? getVerificationTokenForEmail(String email) {
+    return _verificationTokens[email.trim().toLowerCase()];
+  }
+
+  // Social login storage (in-memory for mock)
+  final Map<String, String> _socialAuthLinks = {}; // providerId -> userId
+
+  // 2FA storage (in-memory for mock)
+  final Map<String, TwoFactorAuthModel> _twoFactorAuth = {}; // userId -> 2FA data
+
+  // Social login - Google
+  Future<UserModel> signInWithGoogle({
+    required String email,
+    required String name,
+    String? profileImageUrl,
+    String? providerId,
+    UserRole? role,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+    final normalizedEmail = email.trim().toLowerCase();
+
+    // Check if user exists with this email
+    final existingUser = _users.firstWhere(
+      (u) => u.email.toLowerCase() == normalizedEmail,
+      orElse: () => UserModel(
+        id: _uuid.v4(),
+        email: normalizedEmail,
+        name: name,
+        role: role ?? UserRole.restaurant, // Use provided role or default
+      ),
+    );
+
+    // If user doesn't exist, create new user
+    if (!_users.contains(existingUser)) {
+      final newUser = existingUser.copyWith(
+        profileImageUrl: profileImageUrl ??
+            'https://i.pravatar.cc/150?u=${normalizedEmail.hashCode}',
+        isEmailVerified: true, // Social logins are pre-verified
+      );
+      _users.add(newUser);
+      
+      // Link social account
+      if (providerId != null) {
+        _socialAuthLinks['google_$providerId'] = newUser.id;
+      }
+      
+      print('Google sign-in: New user created - $normalizedEmail');
+      return newUser;
+    }
+
+    // Link social account to existing user
+    if (providerId != null) {
+      _socialAuthLinks['google_$providerId'] = existingUser.id;
+    }
+
+    // Update profile image if provided and different
+    if (profileImageUrl != null && 
+        existingUser.profileImageUrl != profileImageUrl) {
+      final updatedUser = existingUser.copyWith(
+        profileImageUrl: profileImageUrl,
+        isEmailVerified: true, // Mark as verified
+      );
+      final index = _users.indexWhere((u) => u.id == existingUser.id);
+      if (index != -1) {
+        _users[index] = updatedUser;
+        return updatedUser;
+      }
+    }
+
+    print('Google sign-in: Existing user - $normalizedEmail');
+    return existingUser;
+  }
+
+  // Social login - Apple
+  Future<UserModel> signInWithApple({
+    required String email,
+    required String name,
+    String? profileImageUrl,
+    String? providerId,
+    UserRole? role,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+    final normalizedEmail = email.trim().toLowerCase();
+
+    // Check if user exists with this email
+    final existingUser = _users.firstWhere(
+      (u) => u.email.toLowerCase() == normalizedEmail,
+      orElse: () => UserModel(
+        id: _uuid.v4(),
+        email: normalizedEmail,
+        name: name,
+        role: role ?? UserRole.restaurant, // Use provided role or default
+      ),
+    );
+
+    // If user doesn't exist, create new user
+    if (!_users.contains(existingUser)) {
+      final newUser = existingUser.copyWith(
+        profileImageUrl: profileImageUrl ??
+            'https://i.pravatar.cc/150?u=${normalizedEmail.hashCode}',
+        isEmailVerified: true, // Social logins are pre-verified
+      );
+      _users.add(newUser);
+      
+      // Link social account
+      if (providerId != null) {
+        _socialAuthLinks['apple_$providerId'] = newUser.id;
+      }
+      
+      print('Apple sign-in: New user created - $normalizedEmail');
+      return newUser;
+    }
+
+    // Link social account to existing user
+    if (providerId != null) {
+      _socialAuthLinks['apple_$providerId'] = existingUser.id;
+    }
+
+    // Update profile image if provided
+    if (profileImageUrl != null && 
+        existingUser.profileImageUrl != profileImageUrl) {
+      final updatedUser = existingUser.copyWith(
+        profileImageUrl: profileImageUrl,
+        isEmailVerified: true,
+      );
+      final index = _users.indexWhere((u) => u.id == existingUser.id);
+      if (index != -1) {
+        _users[index] = updatedUser;
+        return updatedUser;
+      }
+    }
+
+    print('Apple sign-in: Existing user - $normalizedEmail');
+    return existingUser;
+  }
+
+  // Social login - Facebook
+  Future<UserModel> signInWithFacebook({
+    required String email,
+    required String name,
+    String? profileImageUrl,
+    String? providerId,
+    UserRole? role,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+    final normalizedEmail = email.trim().toLowerCase();
+
+    // Check if user exists with this email
+    final existingUser = _users.firstWhere(
+      (u) => u.email.toLowerCase() == normalizedEmail,
+      orElse: () => UserModel(
+        id: _uuid.v4(),
+        email: normalizedEmail,
+        name: name,
+        role: role ?? UserRole.restaurant, // Use provided role or default
+      ),
+    );
+
+    // If user doesn't exist, create new user
+    if (!_users.contains(existingUser)) {
+      final newUser = existingUser.copyWith(
+        profileImageUrl: profileImageUrl ??
+            'https://i.pravatar.cc/150?u=${normalizedEmail.hashCode}',
+        isEmailVerified: true, // Social logins are pre-verified
+      );
+      _users.add(newUser);
+      
+      // Link social account
+      if (providerId != null) {
+        _socialAuthLinks['facebook_$providerId'] = newUser.id;
+      }
+      
+      print('Facebook sign-in: New user created - $normalizedEmail');
+      return newUser;
+    }
+
+    // Link social account to existing user
+    if (providerId != null) {
+      _socialAuthLinks['facebook_$providerId'] = existingUser.id;
+    }
+
+    // Update profile image if provided
+    if (profileImageUrl != null && 
+        existingUser.profileImageUrl != profileImageUrl) {
+      final updatedUser = existingUser.copyWith(
+        profileImageUrl: profileImageUrl,
+        isEmailVerified: true,
+      );
+      final index = _users.indexWhere((u) => u.id == existingUser.id);
+      if (index != -1) {
+        _users[index] = updatedUser;
+        return updatedUser;
+      }
+    }
+
+    print('Facebook sign-in: Existing user - $normalizedEmail');
+    return existingUser;
+  }
+
+  // Two-Factor Authentication methods
+
+  /// Setup 2FA for a user
+  Future<TwoFactorAuthModel> setupTwoFactorAuth(String userId) async {
+    await Future.delayed(const Duration(seconds: 1));
+    
+    final twoFactorService = TwoFactorAuthService.instance;
+    final secretKey = twoFactorService.generateSecretKey();
+    final backupCodes = twoFactorService.generateBackupCodes();
+    
+    final twoFactorAuth = TwoFactorAuthModel(
+      isEnabled: false, // Not enabled until verified
+      secretKey: secretKey,
+      backupCodes: backupCodes,
+      setupDate: DateTime.now(),
+    );
+    
+    _twoFactorAuth[userId] = twoFactorAuth;
+    print('2FA setup initiated for user $userId');
+    return twoFactorAuth;
+  }
+
+  /// Get 2FA status for a user
+  TwoFactorAuthModel? getTwoFactorAuth(String userId) {
+    return _twoFactorAuth[userId];
+  }
+
+  /// Verify and enable 2FA
+  Future<void> verifyAndEnableTwoFactorAuth({
+    required String userId,
+    required String code,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+    
+    final twoFactorAuth = _twoFactorAuth[userId];
+    if (twoFactorAuth == null || twoFactorAuth.secretKey == null) {
+      throw Exception('2FA setup not found. Please setup 2FA first.');
+    }
+
+    final twoFactorService = TwoFactorAuthService.instance;
+    final isValid = twoFactorService.verifyCode(twoFactorAuth.secretKey!, code);
+    
+    if (!isValid) {
+      throw Exception('Invalid verification code.');
+    }
+
+    // Enable 2FA
+    _twoFactorAuth[userId] = twoFactorAuth.copyWith(
+      isEnabled: true,
+    );
+    
+    print('2FA enabled for user $userId');
+  }
+
+  /// Disable 2FA
+  Future<void> disableTwoFactorAuth(String userId) async {
+    await Future.delayed(const Duration(seconds: 1));
+    _twoFactorAuth.remove(userId);
+    print('2FA disabled for user $userId');
+  }
+
+  /// Verify 2FA code during login
+  Future<bool> verifyTwoFactorCode({
+    required String userId,
+    required String code,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    final twoFactorAuth = _twoFactorAuth[userId];
+    if (twoFactorAuth == null || !twoFactorAuth.isEnabled) {
+      return true; // 2FA not enabled, allow login
+    }
+
+    if (twoFactorAuth.secretKey == null) {
+      return false;
+    }
+
+    final twoFactorService = TwoFactorAuthService.instance;
+    
+    // Try TOTP code first
+    final isValidTotp = twoFactorService.verifyCode(twoFactorAuth.secretKey!, code);
+    if (isValidTotp) {
+      return true;
+    }
+
+    // Try backup code
+    if (twoFactorAuth.backupCodes != null) {
+      final isValidBackup = twoFactorService.verifyBackupCode(
+        twoFactorAuth.backupCodes!,
+        code,
+      );
+      
+      if (isValidBackup) {
+        // Remove used backup code
+        final updatedCodes = twoFactorService.removeBackupCode(
+          twoFactorAuth.backupCodes!,
+          code,
+        );
+        _twoFactorAuth[userId] = twoFactorAuth.copyWith(
+          backupCodes: updatedCodes,
+        );
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /// Regenerate backup codes
+  Future<List<String>> regenerateBackupCodes(String userId) async {
+    await Future.delayed(const Duration(seconds: 1));
+    
+    final twoFactorAuth = _twoFactorAuth[userId];
+    if (twoFactorAuth == null || !twoFactorAuth.isEnabled) {
+      throw Exception('2FA is not enabled.');
+    }
+
+    final twoFactorService = TwoFactorAuthService.instance;
+    final newBackupCodes = twoFactorService.generateBackupCodes();
+    
+    _twoFactorAuth[userId] = twoFactorAuth.copyWith(
+      backupCodes: newBackupCodes,
+    );
+    
+    print('Backup codes regenerated for user $userId');
+    return newBackupCodes;
+  }
 }
 

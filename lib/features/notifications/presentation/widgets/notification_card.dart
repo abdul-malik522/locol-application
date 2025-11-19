@@ -30,6 +30,16 @@ class NotificationCard extends ConsumerWidget {
       case NotificationType.message:
         context.push('/messages/chat/${notification.relatedId}');
         break;
+      case NotificationType.follow:
+        if (notification.relatedId != null) {
+          context.push('/user/${notification.relatedId}');
+        }
+        break;
+      case NotificationType.review:
+        if (notification.relatedId != null) {
+          context.push('/order/${notification.relatedId}');
+        }
+        break;
       case NotificationType.system:
         // Show dialog with full message
         showDialog(

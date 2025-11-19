@@ -24,6 +24,10 @@ class PostModel {
     this.likeCount = 0,
     this.commentCount = 0,
     this.isLiked = false,
+    this.isScheduled = false,
+    this.scheduledAt,
+    this.expiresAt,
+    this.isArchived = false,
     DateTime? createdAt,
     DateTime? updatedAt,
   })  : createdAt = createdAt ?? DateTime.now(),
@@ -47,6 +51,10 @@ class PostModel {
   final int likeCount;
   final int commentCount;
   final bool isLiked;
+  final bool isScheduled;
+  final DateTime? scheduledAt;
+  final DateTime? expiresAt;
+  final bool isArchived;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -78,6 +86,10 @@ class PostModel {
     int? likeCount,
     int? commentCount,
     bool? isLiked,
+    bool? isScheduled,
+    DateTime? scheduledAt,
+    DateTime? expiresAt,
+    bool? isArchived,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -100,6 +112,10 @@ class PostModel {
       likeCount: likeCount ?? this.likeCount,
       commentCount: commentCount ?? this.commentCount,
       isLiked: isLiked ?? this.isLiked,
+      isScheduled: isScheduled ?? this.isScheduled,
+      scheduledAt: scheduledAt ?? this.scheduledAt,
+      expiresAt: expiresAt ?? this.expiresAt,
+      isArchived: isArchived ?? this.isArchived,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
     );
@@ -133,6 +149,14 @@ class PostModel {
       likeCount: json['likeCount'] as int? ?? 0,
       commentCount: json['commentCount'] as int? ?? 0,
       isLiked: json['isLiked'] as bool? ?? false,
+      isScheduled: json['isScheduled'] as bool? ?? false,
+      scheduledAt: json['scheduledAt'] != null
+          ? DateTime.tryParse(json['scheduledAt'] as String)
+          : null,
+      expiresAt: json['expiresAt'] != null
+          ? DateTime.tryParse(json['expiresAt'] as String)
+          : null,
+      isArchived: json['isArchived'] as bool? ?? false,
       createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??
           DateTime.now(),
       updatedAt: DateTime.tryParse(json['updatedAt'] as String? ?? '') ??
@@ -160,9 +184,23 @@ class PostModel {
       'likeCount': likeCount,
       'commentCount': commentCount,
       'isLiked': isLiked,
+      'isScheduled': isScheduled,
+      'scheduledAt': scheduledAt?.toIso8601String(),
+      'expiresAt': expiresAt?.toIso8601String(),
+      'isArchived': isArchived,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
+  }
+
+  bool get isPublished => !isScheduled || (scheduledAt != null && DateTime.now().isAfter(scheduledAt!));
+  
+  bool get isExpired => expiresAt != null && DateTime.now().isAfter(expiresAt!);
+  
+  bool get isExpiringSoon {
+    if (expiresAt == null || isExpired) return false;
+    final timeUntilExpiry = expiresAt!.difference(DateTime.now());
+    return timeUntilExpiry.inHours <= 24 && timeUntilExpiry.inHours > 0;
   }
 }
 

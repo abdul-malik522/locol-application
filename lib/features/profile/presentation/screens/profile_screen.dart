@@ -10,6 +10,15 @@ import 'package:localtrade/features/auth/providers/auth_provider.dart';
 import 'package:localtrade/features/home/presentation/widgets/post_card.dart';
 import 'package:localtrade/features/home/providers/posts_provider.dart';
 import 'package:localtrade/features/orders/providers/orders_provider.dart';
+import 'package:localtrade/features/profile/data/models/business_hours_model.dart';
+import 'package:localtrade/features/profile/data/models/certification_model.dart';
+import 'package:localtrade/features/profile/data/models/review_model.dart';
+import 'package:localtrade/features/profile/data/models/verification_badge_model.dart';
+import 'package:localtrade/features/profile/presentation/widgets/certification_widget.dart';
+import 'package:localtrade/features/profile/presentation/widgets/verification_badge_widget.dart';
+import 'package:localtrade/features/profile/data/services/profile_share_service.dart';
+import 'package:localtrade/features/profile/providers/follows_provider.dart';
+import 'package:localtrade/features/profile/providers/reviews_provider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -28,9 +37,9 @@ class ProfileScreen extends ConsumerWidget {
       );
     }
 
-    // Filter posts by current user
+    // Filter posts by current user (exclude archived)
     final userPosts = postsState.posts
-        .where((post) => post.userId == currentUser.id)
+        .where((post) => post.userId == currentUser.id && !post.isArchived)
         .toList();
 
     // Count orders
@@ -47,10 +56,10 @@ class ProfileScreen extends ConsumerWidget {
             child: _buildProfileInfo(context, currentUser),
           ),
           SliverToBoxAdapter(
-            child: _buildStats(context, userPosts.length, userOrders),
+            child: _buildStats(context, ref, userPosts.length, userOrders, currentUser.id),
           ),
           SliverToBoxAdapter(
-            child: _buildActionButtons(context),
+            child: _buildActionButtons(context, ref),
           ),
           SliverToBoxAdapter(
             child: _buildTabs(context, ref),
@@ -123,6 +132,11 @@ class ProfileScreen extends ConsumerWidget {
       ),
       actions: [
         IconButton(
+          icon: const Icon(Icons.analytics_outlined),
+          onPressed: () => context.push('/analytics'),
+          tooltip: 'View Analytics',
+        ),
+        IconButton(
           icon: const Icon(Icons.settings_outlined),
           onPressed: () => context.push('/settings'),
         ),
@@ -168,11 +182,25 @@ class ProfileScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Text(
-            currentUser.businessName ?? currentUser.name,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  currentUser.businessName ?? currentUser.name,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
+              ),
+              if (currentUser.verificationBadges.isNotEmpty) ...[
+                const SizedBox(width: 8),
+                VerificationBadgesWidget(
+                  badges: currentUser.verificationBadges,
+                  size: 18,
+                ),
+              ],
+            ],
           ),
           const SizedBox(height: 4),
           Text(
@@ -180,12 +208,24 @@ class ProfileScreen extends ConsumerWidget {
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 8),
-          Chip(
-            avatar: Icon(
-              currentUser.role.icon,
-              size: 16,
-            ),
-            label: Text(currentUser.role.label),
+          Row(
+            children: [
+              Chip(
+                avatar: Icon(
+                  currentUser.role.icon,
+                  size: 16,
+                ),
+                label: Text(currentUser.role.label),
+              ),
+              if (currentUser.verificationBadges.isNotEmpty) ...[
+                const SizedBox(width: 8),
+                VerificationBadgesWidget(
+                  badges: currentUser.verificationBadges,
+                  size: 16,
+                  showLabel: true,
+                ),
+              ],
+            ],
           ),
           if (currentUser.rating > 0) ...[
             const SizedBox(height: 12),
@@ -251,7 +291,16 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStats(BuildContext context, int postsCount, int ordersCount) {
+  Widget _buildStats(
+    BuildContext context,
+    WidgetRef ref,
+    int postsCount,
+    int ordersCount,
+    String userId,
+  ) {
+    final followerCountAsync = ref.watch(followerCountProvider(userId));
+    final followingCountAsync = ref.watch(followingCountProvider(userId));
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
@@ -262,14 +311,38 @@ class ProfileScreen extends ConsumerWidget {
         children: [
           _buildStatItem(context, 'Posts', postsCount.toString()),
           _buildStatItem(context, 'Orders', ordersCount.toString()),
-          _buildStatItem(context, 'Followers', '0'), // Placeholder
+          _buildStatItem(
+            context,
+            'Followers',
+            followerCountAsync.when(
+              data: (count) => count.toString(),
+              loading: () => '...',
+              error: (_, __) => '0',
+            ),
+            onTap: () => context.push('/followers/${userId}'),
+          ),
+          _buildStatItem(
+            context,
+            'Following',
+            followingCountAsync.when(
+              data: (count) => count.toString(),
+              loading: () => '...',
+              error: (_, __) => '0',
+            ),
+            onTap: () => context.push('/following/${userId}'),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildStatItem(BuildContext context, String label, String value) {
-    return Column(
+  Widget _buildStatItem(
+    BuildContext context,
+    String label,
+    String value, {
+    VoidCallback? onTap,
+  }) {
+    final widget = Column(
       children: [
         Text(
           value,
@@ -283,30 +356,70 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ],
     );
+
+    if (onTap != null) {
+      return InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: widget,
+        ),
+      );
+    }
+
+    return widget;
   }
 
-  Widget _buildActionButtons(BuildContext context) {
+  Widget _buildActionButtons(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: CustomButton(
-              text: 'Edit Profile',
-              onPressed: () => context.push('/edit-profile'),
-              variant: CustomButtonVariant.outlined,
+          Row(
+            children: [
+              Expanded(
+                child: CustomButton(
+                  text: 'Edit Profile',
+                  onPressed: () => context.push('/edit-profile'),
+                  variant: CustomButtonVariant.outlined,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: CustomButton(
+                  text: 'Share Profile',
+                  onPressed: () => _showShareDialog(context, ref, currentUser),
+                  variant: CustomButtonVariant.outlined,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () => context.push('/qr-code-profile'),
+            icon: const Icon(Icons.qr_code),
+            label: const Text('Show QR Code'),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(40),
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: CustomButton(
-              text: 'Share Profile',
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Share feature coming soon')),
-                );
-              },
-              variant: CustomButtonVariant.outlined,
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () => context.push('/archived-posts'),
+            icon: const Icon(Icons.archive),
+            label: const Text('View Archived Posts'),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(40),
+            ),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () => context.push('/favorites'),
+            icon: const Icon(Icons.bookmark),
+            label: const Text('View Favorites'),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(40),
             ),
           ),
         ],
@@ -315,6 +428,9 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildTabs(BuildContext context, WidgetRef ref) {
+    final currentUser = ref.watch(currentUserProvider);
+    if (currentUser == null) return const SizedBox.shrink();
+
     return DefaultTabController(
       length: 3,
       child: Column(
@@ -327,11 +443,11 @@ class ProfileScreen extends ConsumerWidget {
             ],
           ),
           SizedBox(
-            height: 200,
+            height: 400,
             child: TabBarView(
               children: [
                 const Center(child: Text('Posts tab - shown above')),
-                const Center(child: Text('Reviews coming soon')),
+                _buildReviewsTab(context, ref, currentUser.id),
                 _buildAboutTab(context, ref),
               ],
             ),
@@ -339,6 +455,183 @@ class ProfileScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildReviewsTab(BuildContext context, WidgetRef ref, String userId) {
+    final reviewsAsync = ref.watch(reviewsForUserProvider(userId));
+
+    return reviewsAsync.when(
+      data: (reviews) {
+        if (reviews.isEmpty) {
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.star_outline, size: 64, color: Colors.grey),
+                SizedBox(height: 16),
+                Text(
+                  'No Reviews Yet',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Reviews from completed orders will appear here.',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(reviewsForUserProvider(userId));
+          },
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: reviews.length,
+            itemBuilder: (context, index) {
+              final review = reviews[index];
+              return _buildReviewCard(context, ref, review);
+            },
+          ),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            Text('Error loading reviews: ${error.toString()}'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => ref.invalidate(reviewsForUserProvider(userId)),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReviewCard(
+    BuildContext context,
+    WidgetRef ref,
+    ReviewModel review,
+  ) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: () => context.push('/order/${review.orderId}'),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  child: Text(
+                    review.reviewerName.isNotEmpty
+                        ? review.reviewerName[0].toUpperCase()
+                        : '?',
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        review.reviewerName,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      Text(
+                        'Order #${review.orderNumber}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                RatingBarIndicator(
+                  rating: review.rating,
+                  itemBuilder: (context, index) => const Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                  ),
+                  itemCount: 5,
+                  itemSize: 20,
+                ),
+              ],
+            ),
+            if (review.productImage != null) ...[
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: CachedImage(
+                  imageUrl: review.productImage!,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
+            const SizedBox(height: 12),
+            Text(
+              review.productName,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+            ),
+            if (review.review != null && review.review!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                review.review!,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+            const SizedBox(height: 8),
+            Text(
+              _formatDate(review.createdAt),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
+          ],
+        ),
+      ),
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays == 0) {
+      return 'Today';
+    } else if (difference.inDays == 1) {
+      return 'Yesterday';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inDays < 30) {
+      final weeks = (difference.inDays / 7).floor();
+      return '$weeks ${weeks == 1 ? 'week' : 'weeks'} ago';
+    } else if (difference.inDays < 365) {
+      final months = (difference.inDays / 30).floor();
+      return '$months ${months == 1 ? 'month' : 'months'} ago';
+    } else {
+      final years = (difference.inDays / 365).floor();
+      return '$years ${years == 1 ? 'year' : 'years'} ago';
+    }
   }
 
   Widget _buildAboutTab(BuildContext context, WidgetRef ref) {
@@ -385,8 +678,138 @@ class ProfileScreen extends ConsumerWidget {
             _buildInfoRow(context, 'Address', currentUser.address!),
           if (currentUser.email != null)
             _buildInfoRow(context, 'Email', currentUser.email!),
+          if (currentUser.isRestaurant && currentUser.businessHours != null) ...[
+            const SizedBox(height: 24),
+            _buildBusinessHours(context, currentUser.businessHours!),
+          ],
+          if (currentUser.certifications.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            _buildCertifications(context, currentUser.certifications),
+          ],
         ],
       ),
+    );
+  }
+
+  Widget _buildCertifications(BuildContext context, List<CertificationModel> certifications) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              Icons.verified,
+              size: 20,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Certifications',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        CertificationsWidget(
+          certifications: certifications,
+          wrap: true,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBusinessHours(BuildContext context, BusinessHoursModel businessHours) {
+    final isOpen = businessHours.isCurrentlyOpen();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              Icons.access_time,
+              size: 20,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Business Hours',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: isOpen
+                    ? Colors.green.withOpacity(0.1)
+                    : Colors.red.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isOpen ? Colors.green : Colors.red,
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: isOpen ? Colors.green : Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    isOpen ? 'Open' : 'Closed',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: isOpen ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        ...DayOfWeek.values.map((day) {
+          final dayHours = businessHours.getHoursForDay(day);
+          if (dayHours == null) return const SizedBox.shrink();
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 100,
+                  child: Text(
+                    day.label,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    dayHours.displayText,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: dayHours.isClosed
+                              ? Theme.of(context).colorScheme.onSurfaceVariant
+                              : Theme.of(context).colorScheme.onSurface,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+      ],
     );
   }
 

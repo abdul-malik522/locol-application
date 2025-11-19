@@ -166,5 +166,29 @@ class NotificationsMockDataSource {
     await Future.delayed(const Duration(milliseconds: 300));
     _notifications.removeWhere((notif) => notif.userId == userId);
   }
+
+  /// Create a new notification
+  Future<void> createNotification({
+    required String userId,
+    required NotificationType type,
+    required String title,
+    required String body,
+    String? imageUrl,
+    String? relatedId,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    final notification = NotificationModel(
+      id: _uuid.v4(),
+      userId: userId,
+      type: type,
+      title: title,
+      body: body,
+      imageUrl: imageUrl,
+      relatedId: relatedId,
+      isRead: false,
+      createdAt: DateTime.now(),
+    );
+    _notifications.add(notification);
+  }
 }
 

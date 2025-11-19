@@ -6,6 +6,8 @@ enum NotificationType {
   order,
   message,
   system,
+  follow,
+  review,
 }
 
 @immutable
@@ -44,6 +46,10 @@ class NotificationModel {
         return Icons.chat_bubble;
       case NotificationType.system:
         return Icons.notifications;
+      case NotificationType.follow:
+        return Icons.person_add;
+      case NotificationType.review:
+        return Icons.star;
     }
   }
 
@@ -59,6 +65,10 @@ class NotificationModel {
         return Colors.purple;
       case NotificationType.system:
         return Colors.orange;
+      case NotificationType.follow:
+        return Colors.teal;
+      case NotificationType.review:
+        return Colors.amber;
     }
   }
 

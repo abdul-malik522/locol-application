@@ -7,6 +7,7 @@ import 'package:localtrade/core/constants/app_constants.dart';
 import 'package:localtrade/core/utils/formatters.dart';
 import 'package:localtrade/core/widgets/cached_image.dart';
 import 'package:localtrade/core/widgets/custom_button.dart';
+import 'package:localtrade/features/orders/data/models/cancellation_reason.dart';
 import 'package:localtrade/features/orders/data/models/order_model.dart';
 import 'package:localtrade/features/orders/providers/orders_provider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -31,12 +32,7 @@ class OrderCard extends ConsumerWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: InkWell(
-        onTap: () {
-          // Navigate to order detail screen
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Order detail screen coming soon')),
-          );
-        },
+        onTap: () => context.push('/order/${order.id}'),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -273,30 +269,101 @@ class OrderCard extends ConsumerWidget {
   }
 
   void _showCancelDialog(BuildContext context, WidgetRef ref) {
+    CancellationReason? selectedReason;
+    String? customReason;
+    bool showCustomField = false;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Cancel Order'),
-        content: const Text('Are you sure you want to cancel this order?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('No'),
-          ),
-          TextButton(
-            onPressed: () {
-              ref.read(ordersProvider.notifier).cancelOrder(
-                    order.id,
-                    'Cancelled by buyer',
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Cancel Order'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Please select a reason for cancelling this order. This helps us improve our service.',
+                ),
+                const SizedBox(height: 16),
+                ...CancellationReason.values.map((reason) {
+                  return RadioListTile<CancellationReason>(
+                    title: Row(
+                      children: [
+                        Icon(reason.icon, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text(reason.label)),
+                      ],
+                    ),
+                    value: reason,
+                    groupValue: selectedReason,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedReason = value;
+                        showCustomField = value == CancellationReason.other;
+                        if (!showCustomField) customReason = null;
+                      });
+                    },
                   );
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Order cancelled')),
-              );
-            },
-            child: const Text('Yes', style: TextStyle(color: Colors.red)),
+                }),
+                if (showCustomField) ...[
+                  const SizedBox(height: 16),
+                  TextField(
+                    decoration: const InputDecoration(
+                      labelText: 'Please specify the reason',
+                      hintText: 'Enter cancellation reason',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                    maxLength: 200,
+                    onChanged: (value) {
+                      setState(() => customReason = value.trim());
+                    },
+                  ),
+                ],
+              ],
+            ),
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: selectedReason == null ||
+                      (selectedReason == CancellationReason.other &&
+                          (customReason == null || customReason!.isEmpty))
+                  ? null
+                  : () async {
+                      final reason = selectedReason == CancellationReason.other
+                          ? customReason!
+                          : selectedReason!.label;
+
+                      try {
+                        await ref.read(ordersProvider.notifier).cancelOrder(
+                              order.id,
+                              reason,
+                            );
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Order cancelled')),
+                        );
+                      } catch (e) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Failed to cancel order: ${e.toString()}')),
+                        );
+                      }
+                    },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Cancel Order'),
+            ),
+          ],
+        ),
       ),
     );
   }

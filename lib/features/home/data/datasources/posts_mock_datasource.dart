@@ -490,8 +490,10 @@ class PostsMockDataSource {
   Future<List<PostModel>> getPosts(
     int page,
     int limit,
-    String? filter,
-  ) async {
+    String? filter, {
+    List<String>? followingUserIds,
+    bool trending = false,
+  }) async {
     await Future.delayed(const Duration(milliseconds: 500));
     var filtered = List<PostModel>.from(_posts);
 
@@ -500,6 +502,30 @@ class PostsMockDataSource {
     } else if (filter == 'restaurants') {
       filtered =
           filtered.where((p) => p.userRole == UserRole.restaurant).toList();
+    } else if (followingUserIds != null && followingUserIds.isNotEmpty) {
+      // Filter to show only posts from followed users
+      filtered = filtered.where((p) => followingUserIds.contains(p.userId)).toList();
+    }
+
+    // Filter out scheduled posts that aren't published yet
+    filtered = filtered.where((p) => p.isPublished).toList();
+    
+    // Filter out expired posts
+    filtered = filtered.where((p) => !p.isExpired).toList();
+    
+    // Filter out archived posts
+    filtered = filtered.where((p) => !p.isArchived).toList();
+
+    // Sort by trending score if requested
+    if (trending) {
+      filtered.sort((a, b) {
+        final scoreA = _calculateTrendingScore(a);
+        final scoreB = _calculateTrendingScore(b);
+        return scoreB.compareTo(scoreA);
+      });
+    } else {
+      // Default: sort by newest first
+      filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     }
 
     final start = (page - 1) * limit;
@@ -508,6 +534,60 @@ class PostsMockDataSource {
       start.clamp(0, filtered.length),
       end.clamp(0, filtered.length),
     );
+  }
+
+  /// Calculate trending score based on engagement and recency
+  double _calculateTrendingScore(PostModel post) {
+    final now = DateTime.now();
+    final hoursSinceCreation = now.difference(post.createdAt).inHours;
+    
+    // Engagement score: likes and comments weighted
+    final engagementScore = (post.likeCount * 2.0) + (post.commentCount * 3.0);
+    
+    // Recency score: newer posts get higher score (decay over time)
+    // Posts from last 24 hours get full recency boost
+    final recencyScore = hoursSinceCreation < 24
+        ? 100.0 * (1.0 - (hoursSinceCreation / 24.0))
+        : 0.0;
+    
+    // Combined score
+    return engagementScore + recencyScore;
+  }
+
+  /// Get trending posts (top posts by engagement and recency)
+  Future<List<PostModel>> getTrendingPosts(int limit) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return await getPosts(1, limit, null, trending: true);
+  }
+
+  /// Get featured sellers (verified or premium sellers)
+  Future<List<String>> getFeaturedSellerIds() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    // In a real app, this would query users with verification badges
+    // For mock, we return seller IDs that have verification badges
+    // This would be integrated with AuthMockDataSource in a real implementation
+    return ['user-001', 'user-002', 'user-003']; // Sample featured sellers
+  }
+
+  /// Get posts from featured sellers
+  Future<List<PostModel>> getFeaturedSellerPosts(int limit) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final featuredSellerIds = await getFeaturedSellerIds();
+    var filtered = _posts.where((p) => 
+      featuredSellerIds.contains(p.userId) && 
+      p.isPublished && 
+      !p.isExpired && 
+      !p.isArchived
+    ).toList();
+    
+    filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    
+    return filtered.take(limit).toList();
+  }
+
+  /// Get all posts (for internal use, e.g., analytics)
+  List<PostModel> getAllPosts() {
+    return List.unmodifiable(_posts);
   }
 
   Future<PostModel?> getPostById(String postId) async {
@@ -521,21 +601,76 @@ class PostsMockDataSource {
 
   Future<PostModel> createPost(PostModel post) async {
     await Future.delayed(const Duration(milliseconds: 500));
+    
+    // If post is scheduled, don't add to main feed yet
+    // It will be published when scheduledAt time arrives
+    if (post.isScheduled && post.scheduledAt != null) {
+      _posts.insert(0, post);
+      print('Post scheduled for ${post.scheduledAt}');
+    } else {
+      // Immediate publication
     _posts.insert(0, post);
+    }
+    
     return post;
   }
 
-  Future<PostModel> updatePost(String postId, Map<String, dynamic> updates) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    final index = _posts.indexWhere((p) => p.id == postId);
-    if (index == -1) throw Exception('Post not found');
-    final existing = _posts[index];
-    final updated = existing.copyWith(
-      title: updates['title'] as String?,
-      description: updates['description'] as String?,
-      price: updates['price'] as double?,
-      quantity: updates['quantity'] as String?,
+  /// Publish scheduled posts that are due
+  Future<void> publishScheduledPosts() async {
+    final now = DateTime.now();
+    for (var post in _posts) {
+      if (post.isScheduled && 
+          post.scheduledAt != null && 
+          now.isAfter(post.scheduledAt!)) {
+        // Mark as published
+        final index = _posts.indexWhere((p) => p.id == post.id);
+        if (index != -1) {
+          _posts[index] = post.copyWith(isScheduled: false, scheduledAt: null);
+          print('Published scheduled post: ${post.id}');
+        }
+      }
+    }
+  }
+
+  /// Get scheduled posts for a user
+  List<PostModel> getScheduledPosts(String userId) {
+    return _posts
+        .where((p) => p.userId == userId && p.isScheduled && p.scheduledAt != null)
+        .toList()
+      ..sort((a, b) => (a.scheduledAt ?? DateTime.now())
+          .compareTo(b.scheduledAt ?? DateTime.now()));
+  }
+
+  /// Get archived posts for a user (includes archived posts)
+  List<PostModel> getArchivedPosts(String userId) {
+    return _posts
+        .where((p) => p.userId == userId && p.isArchived)
+        .toList()
+      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+  }
+
+  /// Get all posts including archived (for internal use)
+  List<PostModel> getAllPosts() {
+    return List<PostModel>.from(_posts);
+  }
+
+  Future<PostModel> updatePost(PostModel updatedPost) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final index = _posts.indexWhere((p) => p.id == updatedPost.id);
+    if (index == -1) {
+      throw Exception('Post not found');
+    }
+
+    // Preserve engagement metrics and timestamps
+    final existingPost = _posts[index];
+    final updated = updatedPost.copyWith(
+      likeCount: existingPost.likeCount,
+      commentCount: existingPost.commentCount,
+      isLiked: existingPost.isLiked,
+      createdAt: existingPost.createdAt,
+      updatedAt: DateTime.now(),
     );
+
     _posts[index] = updated;
     return updated;
   }

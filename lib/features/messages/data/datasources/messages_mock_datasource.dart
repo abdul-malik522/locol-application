@@ -14,6 +14,7 @@ class MessagesMockDataSource {
 
   final List<ChatModel> _chats = [];
   final Map<String, List<MessageModel>> _messages = {};
+  final Map<String, Set<String>> _typingUsers = {}; // chatId -> Set of userIds who are typing
 
   void _initializeMockData() {
     final now = DateTime.now();
@@ -215,10 +216,23 @@ class MessagesMockDataSource {
     ];
   }
 
-  Future<List<ChatModel>> getChats(String userId) async {
+  Future<List<ChatModel>> getChats(String userId, {bool includeArchived = false}) async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _chats
-        .where((chat) => chat.participants.contains(userId))
+        .where((chat) {
+          if (!chat.participants.contains(userId)) return false;
+          if (includeArchived) return true;
+          return !chat.isArchivedBy(userId);
+        })
+        .toList();
+  }
+
+  Future<List<ChatModel>> getArchivedChats(String userId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return _chats
+        .where((chat) => 
+            chat.participants.contains(userId) && 
+            chat.isArchivedBy(userId))
         .toList();
   }
 
@@ -307,9 +321,13 @@ class MessagesMockDataSource {
 
     final messages = _messages[chatId];
     if (messages != null) {
+      final readTimestamp = DateTime.now();
       for (var i = 0; i < messages.length; i++) {
         if (messages[i].senderId != userId && !messages[i].isRead) {
-          messages[i] = messages[i].copyWith(isRead: true);
+          messages[i] = messages[i].copyWith(
+            isRead: true,
+            readAt: readTimestamp,
+          );
         }
       }
     }
@@ -328,6 +346,107 @@ class MessagesMockDataSource {
     await Future.delayed(const Duration(milliseconds: 200));
     _chats.removeWhere((chat) => chat.id == chatId);
     _messages.remove(chatId);
+    _typingUsers.remove(chatId);
+  }
+
+  /// Set typing status for a user in a chat
+  Future<void> setTypingStatus(String chatId, String userId, bool isTyping) async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    
+    if (!_typingUsers.containsKey(chatId)) {
+      _typingUsers[chatId] = <String>{};
+    }
+    
+    if (isTyping) {
+      _typingUsers[chatId]!.add(userId);
+    } else {
+      _typingUsers[chatId]!.remove(userId);
+    }
+  }
+
+  /// Get list of users currently typing in a chat
+  Future<List<String>> getTypingUsers(String chatId) async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    return _typingUsers[chatId]?.toList() ?? [];
+  }
+
+  /// Archive or unarchive a chat for a specific user
+  Future<ChatModel> archiveChat(String chatId, String userId, bool archive) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    final chatIndex = _chats.indexWhere((chat) => chat.id == chatId);
+    if (chatIndex == -1) {
+      throw Exception('Chat not found');
+    }
+
+    final chat = _chats[chatIndex];
+    final updatedArchivedBy = Map<String, bool>.from(chat.archivedBy);
+    updatedArchivedBy[userId] = archive;
+
+    final updatedChat = chat.copyWith(archivedBy: updatedArchivedBy);
+    _chats[chatIndex] = updatedChat;
+    return updatedChat;
+  }
+
+  /// Mute or unmute a chat for a specific user
+  Future<ChatModel> muteChat(String chatId, String userId, bool mute) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    final chatIndex = _chats.indexWhere((chat) => chat.id == chatId);
+    if (chatIndex == -1) {
+      throw Exception('Chat not found');
+    }
+
+    final chat = _chats[chatIndex];
+    final updatedMutedBy = Map<String, bool>.from(chat.mutedBy);
+    updatedMutedBy[userId] = mute;
+
+    final updatedChat = chat.copyWith(mutedBy: updatedMutedBy);
+    _chats[chatIndex] = updatedChat;
+    return updatedChat;
+  }
+
+  /// Add or remove a reaction to a message
+  Future<MessageModel> toggleReaction(
+    String chatId,
+    String messageId,
+    String emoji,
+    String userId,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    final messages = _messages[chatId];
+    if (messages == null) {
+      throw Exception('Chat not found');
+    }
+
+    final messageIndex = messages.indexWhere((m) => m.id == messageId);
+    if (messageIndex == -1) {
+      throw Exception('Message not found');
+    }
+
+    final message = messages[messageIndex];
+    final currentReactions = Map<String, List<String>>.from(message.reactions);
+    
+    // Get or create list of users who reacted with this emoji
+    final usersWhoReacted = List<String>.from(currentReactions[emoji] ?? []);
+    
+    // Toggle reaction: if user already reacted, remove; otherwise add
+    if (usersWhoReacted.contains(userId)) {
+      usersWhoReacted.remove(userId);
+      if (usersWhoReacted.isEmpty) {
+        currentReactions.remove(emoji);
+      } else {
+        currentReactions[emoji] = usersWhoReacted;
+      }
+    } else {
+      usersWhoReacted.add(userId);
+      currentReactions[emoji] = usersWhoReacted;
+    }
+
+    final updatedMessage = message.copyWith(reactions: currentReactions);
+    messages[messageIndex] = updatedMessage;
+    return updatedMessage;
   }
 }
 
