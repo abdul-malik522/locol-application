@@ -50,35 +50,35 @@ class MessageBubble extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            if (message.isImageMessage && message.imageUrl != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: CachedImage(
-                  imageUrl: message.imageUrl!,
-                  width: double.infinity,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
-              )
-            else if (message.isVoiceMessage && message.audioUrl != null && message.durationSeconds != null)
-              VoiceMessagePlayer(
-                audioUrl: message.audioUrl!,
-                durationSeconds: message.durationSeconds!,
-                isSentByMe: isSentByMe,
-              )
-            else if (message.isLocationMessage && message.latitude != null && message.longitude != null)
-              _buildLocationMessage(context, ref, message)
-            else if (message.isTextMessage && message.text != null)
-              _buildHighlightedText(
-                context,
-                message.text!,
-                isSentByMe,
-              )
-            else if (message.isOrderMessage)
-              _buildOrderMessage(context)
-            else if (message.isPriceOfferMessage && message.priceOfferData != null)
-              _buildPriceOfferMessage(context, ref)
-            const SizedBox(height: 4),
+              if (message.isImageMessage && message.imageUrl != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: CachedImage(
+                    imageUrl: message.imageUrl!,
+                    width: double.infinity,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                )
+              else if (message.isVoiceMessage && message.audioUrl != null && message.durationSeconds != null)
+                VoiceMessagePlayer(
+                  audioUrl: message.audioUrl!,
+                  durationSeconds: message.durationSeconds!,
+                  isSentByMe: isSentByMe,
+                )
+              else if (message.isLocationMessage && message.latitude != null && message.longitude != null)
+                _buildLocationMessage(context, ref, message)
+              else if (message.isTextMessage && message.text != null)
+                _buildHighlightedText(
+                  context,
+                  message.text!,
+                  isSentByMe,
+                )
+              else if (message.isOrderMessage)
+                _buildOrderMessage(context)
+              else if (message.isPriceOfferMessage && message.priceOfferData != null)
+                _buildPriceOfferMessage(context, ref),
+              const SizedBox(height: 4),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
