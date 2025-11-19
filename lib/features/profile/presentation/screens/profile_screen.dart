@@ -23,11 +23,16 @@ import 'package:localtrade/features/profile/providers/follows_provider.dart';
 import 'package:localtrade/features/profile/providers/reviews_provider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  @override
+  Widget build(BuildContext context) {
     final currentUser = ref.watch(currentUserProvider);
     final postsState = ref.watch(postsProvider);
     final ordersState = ref.watch(ordersProvider);
