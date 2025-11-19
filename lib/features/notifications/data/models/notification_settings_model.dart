@@ -14,7 +14,7 @@ enum NotificationChannel {
 
 @immutable
 class QuietHoursModel {
-  QuietHoursModel({
+  const QuietHoursModel({
     this.enabled = false,
     this.startTime,
     this.endTime,
@@ -97,7 +97,7 @@ class QuietHoursModel {
 
 @immutable
 class NotificationSettingsModel {
-  NotificationSettingsModel({
+  const NotificationSettingsModel({
     required this.userId,
     this.enableAll = true,
     this.pushEnabled = true,

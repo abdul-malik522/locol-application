@@ -4,7 +4,7 @@ import 'package:localtrade/features/search/providers/search_provider.dart';
 
 @immutable
 class SavedSearchModel {
-  SavedSearchModel({
+  const SavedSearchModel({
     required this.id,
     required this.userId,
     required this.name,
