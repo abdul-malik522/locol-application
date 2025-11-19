@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:localtrade/core/constants/app_constants.dart';
 import 'package:localtrade/core/widgets/cached_image.dart';
 import 'package:localtrade/core/widgets/custom_app_bar.dart';
 import 'package:localtrade/core/widgets/custom_button.dart';
@@ -109,7 +110,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildSliverAppBar(BuildContext context, currentUser) {
+  Widget _buildSliverAppBar(BuildContext context, UserModel currentUser) {
     return SliverAppBar(
       expandedHeight: 200,
       pinned: true,
@@ -155,7 +156,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileInfo(BuildContext context, currentUser) {
+  Widget _buildProfileInfo(BuildContext context, UserModel currentUser) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -396,7 +397,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Expanded(
                 child: CustomButton(
                   text: 'Share Profile',
-                  onPressed: () => _showShareDialog(context, currentUser),
+                  onPressed: currentUser != null
+                      ? () => _showShareDialog(context, currentUser!)
+                      : null,
                   variant: CustomButtonVariant.outlined,
                 ),
               ),
