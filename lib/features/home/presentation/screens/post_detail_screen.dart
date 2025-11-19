@@ -853,7 +853,7 @@ class _CommentCard extends StatelessWidget {
       }
     }
   }
-}
+
   void _showShareDialog(BuildContext context, PostModel post) {
     showModalBottomSheet(
       context: context,
@@ -1124,7 +1124,7 @@ class _CommentCard extends StatelessWidget {
                   final finalDescription = selectedReason == PostReportReason.other
                       ? (customReason ?? descriptionController.text.trim())
                       : descriptionController.text.trim().isEmpty
-                          ? selectedReason.label
+                          ? (selectedReason?.label ?? '')
                           : descriptionController.text.trim();
 
                   try {
@@ -1195,10 +1195,10 @@ class _CommentCard extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 Navigator.pop(context);
-                final alertsState = await ref.read(priceAlertsProvider(currentUser.id).future);
+                final alertsState = ref.read(priceAlertsProvider(currentUser.id));
                 final alert = alertsState.alerts.firstWhere((a) => a.postId == post.id && a.isActive);
                 await priceAlertsNotifier.deleteAlert(alert.id);
-                if (context.mounted) {
+                if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Price alert removed')),
                   );
@@ -1326,10 +1326,10 @@ class _CommentCard extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 Navigator.pop(context);
-                final notificationsState = await ref.read(stockNotificationsProvider(currentUser.id).future);
+                final notificationsState = ref.read(stockNotificationsProvider(currentUser.id));
                 final notification = notificationsState.notifications.firstWhere((n) => n.postId == post.id && n.isActive);
                 await stockNotificationsNotifier.deleteNotification(notification.id);
-                if (context.mounted) {
+                if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Stock notification removed')),
                   );

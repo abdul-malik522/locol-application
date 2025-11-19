@@ -342,5 +342,319 @@ class PostCard extends ConsumerWidget {
       return 'Expires soon';
     }
   }
+
+  void _showShareDialog(BuildContext context, PostModel post) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Share Post',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ),
+            const Divider(),
+            GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 3,
+              padding: const EdgeInsets.all(16),
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              children: [
+                _buildShareOption(
+                  context,
+                  SharePlatform.native,
+                  Icons.share,
+                  () => _sharePost(context, post, SharePlatform.native),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.whatsapp,
+                  Icons.chat,
+                  () => _sharePost(context, post, SharePlatform.whatsapp),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.facebook,
+                  Icons.facebook,
+                  () => _sharePost(context, post, SharePlatform.facebook),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.twitter,
+                  Icons.alternate_email,
+                  () => _sharePost(context, post, SharePlatform.twitter),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.email,
+                  Icons.email,
+                  () => _sharePost(context, post, SharePlatform.email),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.sms,
+                  Icons.sms,
+                  () => _sharePost(context, post, SharePlatform.sms),
+                ),
+                _buildShareOption(
+                  context,
+                  SharePlatform.copyLink,
+                  Icons.link,
+                  () => _sharePost(context, post, SharePlatform.copyLink),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShareOption(
+    BuildContext context,
+    SharePlatform platform,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: () {
+        Navigator.pop(context);
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 32,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              platform.label,
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _sharePost(
+    BuildContext context,
+    PostModel post,
+    SharePlatform platform,
+  ) async {
+    try {
+      final shareService = PostShareService.instance;
+      await shareService.shareToPlatform(post, platform);
+
+      if (platform == SharePlatform.copyLink && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Link copied to clipboard!')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to share: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
+  Future<void> _showReportDialog(
+    BuildContext context,
+    WidgetRef ref,
+    PostModel post,
+  ) async {
+    final currentUser = ref.read(currentUserProvider);
+    if (currentUser == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please login to report posts')),
+        );
+      }
+      return;
+    }
+
+    // Check if user already reported this post
+    final reportsDataSource = PostReportsDataSource.instance;
+    final alreadyReported = await reportsDataSource.hasUserReportedPost(
+      post.id,
+      currentUser.id,
+    );
+
+    if (alreadyReported && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('You have already reported this post. Our team will review it.'),
+        ),
+      );
+      return;
+    }
+
+    if (!context.mounted) return;
+
+    final formKey = GlobalKey<FormState>();
+    PostReportReason? selectedReason;
+    final descriptionController = TextEditingController();
+    String? customReason;
+
+    await showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Report Post'),
+          content: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Help us understand the problem. Why are you reporting this post?',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 16),
+                  ...PostReportReason.values.map((reason) {
+                    return RadioListTile<PostReportReason>(
+                      title: Row(
+                        children: [
+                          Icon(reason.icon, size: 20),
+                          const SizedBox(width: 8),
+                          Expanded(child: Text(reason.label)),
+                        ],
+                      ),
+                      value: reason,
+                      groupValue: selectedReason,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedReason = value;
+                          if (value != PostReportReason.other) {
+                            customReason = null;
+                          }
+                        });
+                      },
+                      contentPadding: EdgeInsets.zero,
+                    );
+                  }),
+                  if (selectedReason == PostReportReason.other) ...[
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: descriptionController,
+                      decoration: const InputDecoration(
+                        labelText: 'Please specify the reason',
+                        hintText: 'Describe why you are reporting this post',
+                        border: OutlineInputBorder(),
+                      ),
+                      maxLines: 3,
+                      validator: (value) {
+                        if (selectedReason == PostReportReason.other &&
+                            (value == null || value.trim().isEmpty)) {
+                          return 'Please provide a reason';
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        customReason = value.trim();
+                      },
+                    ),
+                  ] else if (selectedReason != null) ...[
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: descriptionController,
+                      decoration: const InputDecoration(
+                        labelText: 'Additional details (optional)',
+                        hintText: 'Provide any additional information that might help',
+                        border: OutlineInputBorder(),
+                      ),
+                      maxLines: 3,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (formKey.currentState!.validate() && selectedReason != null) {
+                  final finalDescription = selectedReason == PostReportReason.other
+                      ? (customReason ?? descriptionController.text.trim())
+                      : descriptionController.text.trim().isEmpty
+                          ? (selectedReason?.label ?? '')
+                          : descriptionController.text.trim();
+
+                  try {
+                    final report = PostReportModel(
+                      id: '', // Will be generated by datasource
+                      postId: post.id,
+                      reportedBy: currentUser.id,
+                      reportedByName: currentUser.name,
+                      reason: selectedReason!,
+                      description: finalDescription,
+                    );
+
+                    await reportsDataSource.fileReport(report);
+
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Thank you for your report. Our team will review it shortly.',
+                          ),
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to submit report: ${e.toString()}')),
+                      );
+                    }
+                  }
+                }
+              },
+              child: const Text('Submit Report'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    descriptionController.dispose();
+  }
 }
 
