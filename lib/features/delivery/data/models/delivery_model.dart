@@ -211,5 +211,37 @@ class DeliveryRouteModel {
       createdAt: createdAt ?? this.createdAt,
     );
   }
+
+  factory DeliveryRouteModel.fromJson(Map<String, dynamic> json) {
+    return DeliveryRouteModel(
+      id: json['id'] as String,
+      driverId: json['driverId'] as String,
+      deliveries: (json['deliveries'] as List<dynamic>).map((e) => e as String).toList(),
+      startLocation: Map<String, double>.from(json['startLocation'] as Map),
+      optimizedRoute: (json['optimizedRoute'] as List<dynamic>)
+          .map((e) => Map<String, double>.from(e as Map))
+          .toList(),
+      estimatedDuration: json['estimatedDuration'] != null
+          ? Duration(seconds: json['estimatedDuration'] as int)
+          : null,
+      actualDuration: json['actualDuration'] != null
+          ? Duration(seconds: json['actualDuration'] as int)
+          : null,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'driverId': driverId,
+      'deliveries': deliveries,
+      'startLocation': startLocation,
+      'optimizedRoute': optimizedRoute,
+      'estimatedDuration': estimatedDuration?.inSeconds,
+      'actualDuration': actualDuration?.inSeconds,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
 }
 

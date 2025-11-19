@@ -14,17 +14,18 @@ enum ReportStatus {
 }
 
 enum PostReportReason {
-  spam('Spam or misleading content', Icons.report_gmailerrorred),
-  inappropriate('Inappropriate content', Icons.block),
-  fake('Fake or fraudulent listing', Icons.warning_amber),
-  harassment('Harassment or bullying', Icons.person_off),
-  copyright('Copyright violation', Icons.copyright),
-  illegal('Illegal activity', Icons.gavel),
-  other('Other (please specify)', Icons.info_outline);
+  spam('Spam or misleading content', Icons.report_gmailerrorred, Colors.orange),
+  inappropriate('Inappropriate content', Icons.block, Colors.red),
+  fake('Fake or fraudulent listing', Icons.warning_amber, Colors.amber),
+  harassment('Harassment or bullying', Icons.person_off, Colors.purple),
+  copyright('Copyright violation', Icons.copyright, Colors.blue),
+  illegal('Illegal activity', Icons.gavel, Colors.red),
+  other('Other (please specify)', Icons.info_outline, Colors.grey);
 
-  const PostReportReason(this.label, this.icon);
+  const PostReportReason(this.label, this.icon, this.color);
   final String label;
   final IconData icon;
+  final Color color;
 }
 
 @immutable

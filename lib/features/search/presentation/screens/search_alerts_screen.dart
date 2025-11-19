@@ -189,11 +189,13 @@ class _SearchAlertsScreenState extends ConsumerState<SearchAlertsScreen> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                OutlinedButton.icon(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  label: const Text('Delete', style: TextStyle(color: Colors.red)),
-                  onPressed: () => _deleteAlert(context, ref, alert, userId),
-                  fullWidth: true,
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    label: const Text('Delete', style: TextStyle(color: Colors.red)),
+                    onPressed: () => _deleteAlert(context, ref, alert, userId),
+                  ),
                 ),
               ],
             ),

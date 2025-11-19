@@ -88,8 +88,8 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
                 _buildInfoRow(context, 'Method', payout.method.label),
                 if (payout.bankName != null)
                   _buildInfoRow(context, 'Bank', payout.bankName!),
-                if (payout.accountNumber != null)
-                  _buildInfoRow(context, 'Account', '••••${payout.accountNumber!.substring(payout.accountNumber!.length - 4)}'),
+                if (payout.bankAccountNumber != null)
+                  _buildInfoRow(context, 'Account', '••••${payout.bankAccountNumber!.substring(payout.bankAccountNumber!.length - 4)}'),
                 if (payout.transactionId != null)
                   _buildInfoRow(context, 'Transaction ID', payout.transactionId!),
                 if (payout.processedAt != null)
@@ -170,7 +170,7 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
                   label: 'Amount',
                   hint: 'Enter amount',
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  prefixIcon: const Icon(Icons.attach_money),
+                  prefixIcon: Icons.attach_money,
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -249,7 +249,7 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
                     bankName: bankNameController.text.trim().isNotEmpty
                         ? bankNameController.text.trim()
                         : null,
-                    accountNumber: accountNumberController.text.trim().isNotEmpty
+                    bankAccountNumber: accountNumberController.text.trim().isNotEmpty
                         ? accountNumberController.text.trim()
                         : null,
                     routingNumber: routingNumberController.text.trim().isNotEmpty

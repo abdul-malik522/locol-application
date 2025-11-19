@@ -202,7 +202,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
               label: 'Amount',
               hint: 'Enter amount',
               keyboardType: TextInputType.numberWithOptions(decimal: true),
-              prefixIcon: const Icon(Icons.attach_money),
+              prefixIcon: Icons.attach_money,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return 'Please enter an amount';
