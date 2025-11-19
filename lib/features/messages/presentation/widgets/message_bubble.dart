@@ -108,7 +108,8 @@ class MessageBubble extends ConsumerWidget {
                   ],
                 ],
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );
