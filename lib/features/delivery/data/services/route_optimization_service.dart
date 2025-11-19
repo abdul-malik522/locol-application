@@ -121,7 +121,7 @@ class OptimizedRouteResult {
 
 @immutable
 class DeliveryLocation {
-  const DeliveryLocation({
+  DeliveryLocation({
     required this.latitude,
     required this.longitude,
     this.address,

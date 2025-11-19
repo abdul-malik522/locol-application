@@ -97,13 +97,13 @@ class QuietHoursModel {
 
 @immutable
 class NotificationSettingsModel {
-  const NotificationSettingsModel({
+  NotificationSettingsModel({
     required this.userId,
     this.enableAll = true,
     this.pushEnabled = true,
     this.emailEnabled = true,
     this.inAppEnabled = true,
-    this.quietHours = const QuietHoursModel(),
+    QuietHoursModel? quietHours,
     this.likeNotifications = const NotificationChannelSettings(),
     this.commentNotifications = const NotificationChannelSettings(),
     this.orderNotifications = const NotificationChannelSettings(),
@@ -112,7 +112,7 @@ class NotificationSettingsModel {
     this.followNotifications = const NotificationChannelSettings(),
     this.reviewNotifications = const NotificationChannelSettings(),
     DateTime? updatedAt,
-  })  : quietHours = quietHours ?? QuietHoursModel(),
+  })  : quietHours = quietHours ?? const QuietHoursModel(),
         updatedAt = updatedAt ?? DateTime.now();
 
   final String userId;

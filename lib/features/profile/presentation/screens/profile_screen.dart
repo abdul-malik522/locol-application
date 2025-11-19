@@ -7,6 +7,7 @@ import 'package:localtrade/core/widgets/custom_app_bar.dart';
 import 'package:localtrade/core/widgets/custom_button.dart';
 import 'package:localtrade/core/widgets/loading_indicator.dart';
 import 'package:localtrade/features/auth/providers/auth_provider.dart';
+import 'package:localtrade/features/auth/data/models/user_model.dart';
 import 'package:localtrade/features/home/presentation/widgets/post_card.dart';
 import 'package:localtrade/features/home/providers/posts_provider.dart';
 import 'package:localtrade/features/orders/providers/orders_provider.dart';
