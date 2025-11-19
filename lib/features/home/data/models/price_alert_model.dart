@@ -4,7 +4,7 @@ import 'package:localtrade/core/constants/app_constants.dart';
 
 @immutable
 class PriceAlertModel {
-  const PriceAlertModel({
+  PriceAlertModel({
     required this.id,
     required this.userId,
     required this.postId,

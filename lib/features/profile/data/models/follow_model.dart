@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 @immutable
 class FollowModel {
-  const FollowModel({
+  FollowModel({
     required this.followerId,
     required this.followingId,
     DateTime? createdAt,

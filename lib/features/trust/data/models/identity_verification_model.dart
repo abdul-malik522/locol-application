@@ -26,7 +26,7 @@ enum IdentityDocumentType {
 
 @immutable
 class IdentityVerificationModel {
-  const IdentityVerificationModel({
+  IdentityVerificationModel({
     required this.id,
     required this.userId,
     required this.fullName,

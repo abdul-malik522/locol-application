@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 @immutable
 class DeliveryAddressModel {
-  const DeliveryAddressModel({
+  DeliveryAddressModel({
     required this.id,
     required this.userId,
     required this.label,

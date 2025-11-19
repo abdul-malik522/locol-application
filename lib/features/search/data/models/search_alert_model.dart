@@ -13,7 +13,7 @@ enum SearchAlertStatus {
 
 @immutable
 class SearchAlertModel {
-  const SearchAlertModel({
+  SearchAlertModel({
     required this.id,
     required this.userId,
     required this.savedSearchId,

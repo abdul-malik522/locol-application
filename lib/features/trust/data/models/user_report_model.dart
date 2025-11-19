@@ -28,7 +28,7 @@ enum UserReportStatus {
 
 @immutable
 class UserReportModel {
-  const UserReportModel({
+  UserReportModel({
     required this.id,
     required this.reportedUserId,
     required this.reportedUserName,

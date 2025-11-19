@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 @immutable
 class ReviewModel {
-  const ReviewModel({
+  ReviewModel({
     required this.id,
     required this.orderId,
     required this.orderNumber,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -839,7 +840,7 @@ class _CommentCard extends StatelessWidget {
       final shareService = PostShareService.instance;
       await shareService.shareToPlatform(post, platform);
 
-      if (platform == SharePlatform.copyLink }} mounted) {
+      if (platform == SharePlatform.copyLink && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Link copied to clipboard!')),
         );

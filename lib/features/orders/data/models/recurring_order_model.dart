@@ -14,7 +14,7 @@ enum RecurrenceFrequency {
 
 @immutable
 class RecurringOrderModel {
-  const RecurringOrderModel({
+  RecurringOrderModel({
     required this.id,
     required this.orderId,
     required this.buyerId,

@@ -1,5 +1,5 @@
 class TwoFactorAuthModel {
-  const TwoFactorAuthModel({
+  TwoFactorAuthModel({
     required this.isEnabled,
     this.secretKey,
     this.backupCodes,

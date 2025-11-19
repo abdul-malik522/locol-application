@@ -13,7 +13,7 @@ enum VerificationType {
 
 @immutable
 class VerificationBadgeModel {
-  const VerificationBadgeModel({
+  VerificationBadgeModel({
     required this.type,
     this.verifiedAt,
     this.verifiedBy,

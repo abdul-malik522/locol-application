@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:localtrade/core/constants/app_constants.dart';
 
 class DraftPostModel {
-  const DraftPostModel({
+  DraftPostModel({
     required this.id,
     required this.userId,
     required this.title,

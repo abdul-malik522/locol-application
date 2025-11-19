@@ -14,7 +14,7 @@ enum StockStatus {
 
 @immutable
 class InventoryItemModel {
-  const InventoryItemModel({
+  InventoryItemModel({
     required this.id,
     required this.postId,
     required this.productName,
@@ -121,7 +121,7 @@ class InventoryItemModel {
 
 @immutable
 class StockAlertModel {
-  const StockAlertModel({
+  StockAlertModel({
     required this.id,
     required this.inventoryItemId,
     required this.postId,
@@ -213,7 +213,7 @@ enum StockAlertType {
 
 @immutable
 class AvailabilityCalendarModel {
-  const AvailabilityCalendarModel({
+  AvailabilityCalendarModel({
     required this.id,
     required this.postId,
     required this.productName,

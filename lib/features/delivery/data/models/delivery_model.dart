@@ -28,7 +28,7 @@ enum DeliveryStatus {
 
 @immutable
 class DeliveryModel {
-  const DeliveryModel({
+  DeliveryModel({
     required this.id,
     required this.orderId,
     required this.method,
@@ -170,7 +170,7 @@ class DeliveryModel {
 
 @immutable
 class DeliveryRouteModel {
-  const DeliveryRouteModel({
+  DeliveryRouteModel({
     required this.id,
     required this.driverId,
     required this.deliveries,

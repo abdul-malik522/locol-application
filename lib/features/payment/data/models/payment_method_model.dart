@@ -29,7 +29,7 @@ enum PaymentStatus {
 
 @immutable
 class PaymentMethodModel {
-  const PaymentMethodModel({
+  PaymentMethodModel({
     required this.id,
     required this.userId,
     required this.type,

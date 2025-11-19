@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:localtrade/features/notifications/data/models/notification_model.dart';
+
 enum NotificationChannel {
   push('Push Notifications', Icons.notifications_active),
   email('Email', Icons.email),
@@ -12,7 +14,7 @@ enum NotificationChannel {
 
 @immutable
 class QuietHoursModel {
-  const QuietHoursModel({
+  QuietHoursModel({
     this.enabled = false,
     this.startTime,
     this.endTime,
@@ -95,7 +97,7 @@ class QuietHoursModel {
 
 @immutable
 class NotificationSettingsModel {
-  const NotificationSettingsModel({
+  NotificationSettingsModel({
     required this.userId,
     this.enableAll = true,
     this.pushEnabled = true,

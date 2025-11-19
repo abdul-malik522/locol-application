@@ -26,7 +26,7 @@ enum PayoutMethod {
 
 @immutable
 class PayoutModel {
-  const PayoutModel({
+  PayoutModel({
     required this.id,
     required this.userId,
     required this.amount,

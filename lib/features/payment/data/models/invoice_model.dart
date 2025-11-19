@@ -4,7 +4,7 @@ import 'package:localtrade/features/orders/data/models/order_model.dart';
 
 @immutable
 class InvoiceModel {
-  const InvoiceModel({
+  InvoiceModel({
     required this.id,
     required this.orderId,
     required this.invoiceNumber,

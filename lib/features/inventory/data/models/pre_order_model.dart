@@ -14,7 +14,7 @@ enum PreOrderStatus {
 
 @immutable
 class PreOrderModel {
-  const PreOrderModel({
+  PreOrderModel({
     required this.id,
     required this.postId,
     required this.productName,

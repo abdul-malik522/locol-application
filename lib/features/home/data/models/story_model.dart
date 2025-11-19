@@ -4,7 +4,7 @@ import 'package:localtrade/core/constants/app_constants.dart';
 
 @immutable
 class StoryModel {
-  const StoryModel({
+  StoryModel({
     required this.id,
     required this.userId,
     required this.userName,

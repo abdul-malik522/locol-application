@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 @immutable
 class StockNotificationModel {
-  const StockNotificationModel({
+  StockNotificationModel({
     required this.id,
     required this.userId,
     required this.postId,

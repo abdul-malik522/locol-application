@@ -15,7 +15,7 @@ enum BusinessVerificationStatus {
 
 @immutable
 class BusinessVerificationModel {
-  const BusinessVerificationModel({
+  BusinessVerificationModel({
     required this.id,
     required this.userId,
     required this.businessName,

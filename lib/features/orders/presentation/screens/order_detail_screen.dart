@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+import 'package:localtrade/core/constants/app_constants.dart';
 import 'package:localtrade/core/widgets/cached_image.dart';
 import 'package:localtrade/core/widgets/custom_app_bar.dart';
 import 'package:localtrade/core/widgets/custom_button.dart';

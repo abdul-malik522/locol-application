@@ -28,7 +28,7 @@ enum WalletTransactionStatus {
 
 @immutable
 class WalletModel {
-  const WalletModel({
+  WalletModel({
     required this.userId,
     required this.balance,
     required this.currency,
@@ -75,7 +75,7 @@ class WalletModel {
 
 @immutable
 class WalletTransactionModel {
-  const WalletTransactionModel({
+  WalletTransactionModel({
     required this.id,
     required this.userId,
     required this.type,

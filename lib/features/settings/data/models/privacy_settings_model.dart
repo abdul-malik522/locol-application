@@ -24,7 +24,7 @@ enum MessagePrivacy {
 
 @immutable
 class PrivacySettingsModel {
-  const PrivacySettingsModel({
+  PrivacySettingsModel({
     required this.userId,
     this.profileVisibility = ProfileVisibility.public,
     this.showEmail = false,

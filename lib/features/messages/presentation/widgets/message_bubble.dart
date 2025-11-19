@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:localtrade/core/constants/app_constants.dart';
 import 'package:localtrade/core/widgets/cached_image.dart';
 import 'package:localtrade/features/auth/providers/auth_provider.dart';
 import 'package:localtrade/features/messages/data/models/message_model.dart';

@@ -65,5 +65,10 @@ class DisputesDataSource {
     _disputes[index] = updated;
     return updated;
   }
+
+  Future<List<DisputeModel>> getAllDisputes() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return List.from(_disputes)..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
 }
 

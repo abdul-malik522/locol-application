@@ -26,7 +26,7 @@ enum CertificationType {
 
 @immutable
 class CertificationModel {
-  const CertificationModel({
+  CertificationModel({
     required this.type,
     this.certificationNumber,
     this.issuingOrganization,

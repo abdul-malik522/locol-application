@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 @immutable
 class OrderTemplateModel {
-  const OrderTemplateModel({
+  OrderTemplateModel({
     required this.id,
     required this.userId,
     required this.name,

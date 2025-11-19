@@ -96,7 +96,7 @@ class DayHours {
 
 @immutable
 class BusinessHoursModel {
-  const BusinessHoursModel({
+  BusinessHoursModel({
     this.hours = const [],
   });
 

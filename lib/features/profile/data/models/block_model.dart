@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 @immutable
 class BlockModel {
-  const BlockModel({
+  BlockModel({
     required this.blockerId,
     required this.blockedId,
     DateTime? createdAt,

@@ -31,7 +31,7 @@ class DeliveryLocation {
 
 @immutable
 class DeliveryTrackingModel {
-  const DeliveryTrackingModel({
+  DeliveryTrackingModel({
     required this.orderId,
     required this.status,
     required this.currentLocation,

@@ -30,7 +30,7 @@ enum DisputeReason {
 
 @immutable
 class DisputeModel {
-  const DisputeModel({
+  DisputeModel({
     required this.id,
     required this.orderId,
     required this.filedBy,

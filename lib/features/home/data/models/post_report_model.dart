@@ -29,7 +29,7 @@ enum PostReportReason {
 
 @immutable
 class PostReportModel {
-  const PostReportModel({
+  PostReportModel({
     required this.id,
     required this.postId,
     required this.reportedBy,

@@ -4,7 +4,7 @@ import 'package:localtrade/features/payment/data/models/payment_method_model.dar
 
 @immutable
 class PaymentModel {
-  const PaymentModel({
+  PaymentModel({
     required this.id,
     required this.orderId,
     required this.userId,
