@@ -585,345 +585,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         return Icons.category;
     }
   }
-}
-
-class _FilterBottomSheet extends ConsumerStatefulWidget {
-  @override
-  ConsumerState<_FilterBottomSheet> createState() => _FilterBottomSheetState();
-}
-
-class _FilterBottomSheetState extends ConsumerState<_FilterBottomSheet> {
-  late List<String> _selectedCategories;
-  String? _selectedPostType;
-  double _minPrice = 0;
-  double _maxPrice = 100;
-  double _distance = 50;
-  double _minRating = 0;
-  String? _availability;
-  String? _sortBy;
-  bool _initialized = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedCategories = [];
-  }
-
-  void _initializeFromFilters(Map<String, dynamic> filters) {
-    if (_initialized) return;
-    _initialized = true;
-
-    if (filters.containsKey('categories') && filters['categories'] != null) {
-      _selectedCategories = List<String>.from(filters['categories'] as List<String>);
-    }
-    if (filters.containsKey('postType') && filters['postType'] != null) {
-      _selectedPostType = filters['postType'] as String;
-    }
-    if (filters.containsKey('priceRange') && filters['priceRange'] != null) {
-      final priceRange = filters['priceRange'] as Map<String, double>;
-      _minPrice = priceRange['min'] ?? 0;
-      _maxPrice = priceRange['max'] ?? 100;
-    }
-    if (filters.containsKey('distance') && filters['distance'] != null) {
-      _distance = filters['distance'] as double;
-    }
-    if (filters.containsKey('minRating') && filters['minRating'] != null) {
-      _minRating = filters['minRating'] as double;
-    }
-    if (filters.containsKey('availability') && filters['availability'] != null) {
-      _availability = filters['availability'] as String;
-    }
-    final searchState = ref.read(searchProvider);
-    _sortBy = searchState.sortBy;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final searchState = ref.watch(searchProvider);
-    final filters = searchState.filters;
-
-    _initializeFromFilters(filters);
-
-    return Container(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Filter Results',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 24),
-          _buildCategoryFilter(context),
-          const SizedBox(height: 24),
-          _buildPostTypeFilter(context),
-          const SizedBox(height: 24),
-          _buildPriceRangeFilter(context),
-          const SizedBox(height: 24),
-          _buildDistanceFilter(context),
-          const SizedBox(height: 24),
-          _buildRatingFilter(context),
-          const SizedBox(height: 24),
-          _buildAvailabilityFilter(context),
-          const SizedBox(height: 24),
-          _buildSortOptions(context),
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Cancel'),
-              ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () {
-                  final newFilters = <String, dynamic>{};
-                  if (_selectedCategories.isNotEmpty) {
-                    newFilters['categories'] = _selectedCategories;
-                  }
-                  if (_selectedPostType != null) {
-                    newFilters['postType'] = _selectedPostType;
-                  }
-                  if (_minPrice > 0 || _maxPrice < 100) {
-                    newFilters['priceRange'] = {
-                      'min': _minPrice,
-                      'max': _maxPrice,
-                    };
-                  }
-                  if (_distance < 50) {
-                    newFilters['distance'] = _distance;
-                  }
-                  if (_minRating > 0) {
-                    newFilters['minRating'] = _minRating;
-                  }
-                  if (_availability != null) {
-                    newFilters['availability'] = _availability;
-                  }
-                  ref.read(searchProvider.notifier).updateFilters(newFilters);
-                  if (_sortBy != null) {
-                    ref.read(searchProvider.notifier).setSortBy(_sortBy);
-                  }
-                  Navigator.pop(context);
-                },
-                child: const Text('Apply'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryFilter(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Categories',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: AppConstants.categories.map((category) {
-            final isSelected = _selectedCategories.contains(category);
-            return FilterChip(
-              label: Text(category),
-              selected: isSelected,
-              onSelected: (selected) {
-                setState(() {
-                  if (selected) {
-                    _selectedCategories.add(category);
-                  } else {
-                    _selectedCategories.remove(category);
-                  }
-                });
-              },
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPostTypeFilter(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Post Type',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 12),
-        SegmentedButton<String?>(
-          segments: const [
-            ButtonSegment(value: 'products', label: Text('Products')),
-            ButtonSegment(value: 'requests', label: Text('Requests')),
-            ButtonSegment(value: null, label: Text('Both')),
-          ],
-          selected: {_selectedPostType},
-          onSelectionChanged: (Set<String?> selected) {
-            setState(() {
-              _selectedPostType = selected.first;
-            });
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPriceRangeFilter(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Price Range',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 12),
-        RangeSlider(
-          values: RangeValues(_minPrice, _maxPrice),
-          min: 0,
-          max: 100,
-          divisions: 20,
-          labels: RangeLabels(
-            '\$${_minPrice.toStringAsFixed(0)}',
-            '\$${_maxPrice.toStringAsFixed(0)}',
-          ),
-          onChanged: (values) {
-            setState(() {
-              _minPrice = values.start;
-              _maxPrice = values.end;
-            });
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDistanceFilter(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Distance (km)',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 12),
-        Slider(
-          value: _distance,
-          min: 5,
-          max: 100,
-          divisions: 19,
-          label: '${_distance.toStringAsFixed(0)} km',
-          onChanged: (value) {
-            setState(() {
-              _distance = value;
-            });
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRatingFilter(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Minimum Seller Rating',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: Slider(
-                value: _minRating,
-                min: 0,
-                max: 5,
-                divisions: 10,
-                label: _minRating.toStringAsFixed(1),
-                onChanged: (value) {
-                  setState(() {
-                    _minRating = value;
-                  });
-                },
-              ),
-            ),
-            SizedBox(
-              width: 60,
-              child: Text(
-                _minRating.toStringAsFixed(1),
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAvailabilityFilter(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Availability',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 12),
-        SegmentedButton<String?>(
-          segments: const [
-            ButtonSegment(value: 'inStock', label: Text('In Stock')),
-            ButtonSegment(value: 'outOfStock', label: Text('Out of Stock')),
-            ButtonSegment(value: null, label: Text('All')),
-          ],
-          selected: {_availability},
-          onSelectionChanged: (Set<String?> selected) {
-            setState(() {
-              _availability = selected.first;
-            });
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSortOptions(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Sort By',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 12),
-        SegmentedButton<String?>(
-          segments: const [
-            ButtonSegment(value: null, label: Text('Relevance')),
-            ButtonSegment(value: 'newest', label: Text('Newest')),
-            ButtonSegment(value: 'price_asc', label: Text('Price ↑')),
-            ButtonSegment(value: 'price_desc', label: Text('Price ↓')),
-            ButtonSegment(value: 'distance', label: Text('Distance')),
-            ButtonSegment(value: 'rating', label: Text('Rating')),
-          ],
-          selected: {_sortBy},
-          onSelectionChanged: (Set<String?> selected) {
-            setState(() {
-              _sortBy = selected.first;
-            });
-          },
-        ),
-      ],
-    );
-  }
 
   Widget _buildSearchTypeTabs(BuildContext context, SearchState state) {
     return Container(
@@ -1291,7 +952,7 @@ class _FilterBottomSheetState extends ConsumerState<_FilterBottomSheet> {
                           itemCount: savedSearches.length,
                           itemBuilder: (context, index) {
                             final savedSearch = savedSearches[index];
-                            return _buildSavedSearchItem(context, ref, savedSearch, currentUser.id);
+                            return _buildSavedSearchItem(context, ref, savedSearch, currentUser.id, _searchController);
                           },
                         );
                       },
@@ -1324,6 +985,7 @@ class _FilterBottomSheetState extends ConsumerState<_FilterBottomSheet> {
     WidgetRef ref,
     SavedSearchModel savedSearch,
     String userId,
+    TextEditingController searchController,
   ) {
     final hasFilters = savedSearch.filters.isNotEmpty;
     final filterCount = savedSearch.filters.length;
@@ -1362,7 +1024,7 @@ class _FilterBottomSheetState extends ConsumerState<_FilterBottomSheet> {
           onSelected: (value) async {
             if (value == 'load') {
               await ref.read(searchProvider.notifier).loadSavedSearch(savedSearch);
-              _searchController.text = savedSearch.query;
+              searchController.text = savedSearch.query;
               Navigator.pop(context); // Close saved searches dialog
             } else if (value == 'delete') {
               _deleteSavedSearch(context, ref, savedSearch.id, userId);
@@ -1393,7 +1055,7 @@ class _FilterBottomSheetState extends ConsumerState<_FilterBottomSheet> {
         ),
         onTap: () async {
           await ref.read(searchProvider.notifier).loadSavedSearch(savedSearch);
-          _searchController.text = savedSearch.query;
+          searchController.text = savedSearch.query;
           Navigator.pop(context); // Close saved searches dialog
         },
       ),
@@ -1442,5 +1104,344 @@ class _FilterBottomSheetState extends ConsumerState<_FilterBottomSheet> {
         }
       }
     }
+  }
+}
+
+class _FilterBottomSheet extends ConsumerStatefulWidget {
+  @override
+  ConsumerState<_FilterBottomSheet> createState() => _FilterBottomSheetState();
+}
+
+class _FilterBottomSheetState extends ConsumerState<_FilterBottomSheet> {
+  late List<String> _selectedCategories;
+  String? _selectedPostType;
+  double _minPrice = 0;
+  double _maxPrice = 100;
+  double _distance = 50;
+  double _minRating = 0;
+  String? _availability;
+  String? _sortBy;
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCategories = [];
+  }
+
+  void _initializeFromFilters(Map<String, dynamic> filters) {
+    if (_initialized) return;
+    _initialized = true;
+
+    if (filters.containsKey('categories') && filters['categories'] != null) {
+      _selectedCategories = List<String>.from(filters['categories'] as List<String>);
+    }
+    if (filters.containsKey('postType') && filters['postType'] != null) {
+      _selectedPostType = filters['postType'] as String;
+    }
+    if (filters.containsKey('priceRange') && filters['priceRange'] != null) {
+      final priceRange = filters['priceRange'] as Map<String, double>;
+      _minPrice = priceRange['min'] ?? 0;
+      _maxPrice = priceRange['max'] ?? 100;
+    }
+    if (filters.containsKey('distance') && filters['distance'] != null) {
+      _distance = filters['distance'] as double;
+    }
+    if (filters.containsKey('minRating') && filters['minRating'] != null) {
+      _minRating = filters['minRating'] as double;
+    }
+    if (filters.containsKey('availability') && filters['availability'] != null) {
+      _availability = filters['availability'] as String;
+    }
+    final searchState = ref.read(searchProvider);
+    _sortBy = searchState.sortBy;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final searchState = ref.watch(searchProvider);
+    final filters = searchState.filters;
+
+    _initializeFromFilters(filters);
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Filter Results',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 24),
+          _buildCategoryFilter(context),
+          const SizedBox(height: 24),
+          _buildPostTypeFilter(context),
+          const SizedBox(height: 24),
+          _buildPriceRangeFilter(context),
+          const SizedBox(height: 24),
+          _buildDistanceFilter(context),
+          const SizedBox(height: 24),
+          _buildRatingFilter(context),
+          const SizedBox(height: 24),
+          _buildAvailabilityFilter(context),
+          const SizedBox(height: 24),
+          _buildSortOptions(context),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: () {
+                  final newFilters = <String, dynamic>{};
+                  if (_selectedCategories.isNotEmpty) {
+                    newFilters['categories'] = _selectedCategories;
+                  }
+                  if (_selectedPostType != null) {
+                    newFilters['postType'] = _selectedPostType;
+                  }
+                  if (_minPrice > 0 || _maxPrice < 100) {
+                    newFilters['priceRange'] = {
+                      'min': _minPrice,
+                      'max': _maxPrice,
+                    };
+                  }
+                  if (_distance < 50) {
+                    newFilters['distance'] = _distance;
+                  }
+                  if (_minRating > 0) {
+                    newFilters['minRating'] = _minRating;
+                  }
+                  if (_availability != null) {
+                    newFilters['availability'] = _availability;
+                  }
+                  ref.read(searchProvider.notifier).updateFilters(newFilters);
+                  if (_sortBy != null) {
+                    ref.read(searchProvider.notifier).setSortBy(_sortBy);
+                  }
+                  Navigator.pop(context);
+                },
+                child: const Text('Apply'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryFilter(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Categories',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: AppConstants.categories.map((category) {
+            final isSelected = _selectedCategories.contains(category);
+            return FilterChip(
+              label: Text(category),
+              selected: isSelected,
+              onSelected: (selected) {
+                setState(() {
+                  if (selected) {
+                    _selectedCategories.add(category);
+                  } else {
+                    _selectedCategories.remove(category);
+                  }
+                });
+              },
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPostTypeFilter(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Post Type',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 12),
+        SegmentedButton<String?>(
+          segments: const [
+            ButtonSegment(value: 'products', label: Text('Products')),
+            ButtonSegment(value: 'requests', label: Text('Requests')),
+            ButtonSegment(value: null, label: Text('Both')),
+          ],
+          selected: {_selectedPostType},
+          onSelectionChanged: (Set<String?> selected) {
+            setState(() {
+              _selectedPostType = selected.first;
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPriceRangeFilter(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Price Range',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 12),
+        RangeSlider(
+          values: RangeValues(_minPrice, _maxPrice),
+          min: 0,
+          max: 100,
+          divisions: 20,
+          labels: RangeLabels(
+            '\$${_minPrice.toStringAsFixed(0)}',
+            '\$${_maxPrice.toStringAsFixed(0)}',
+          ),
+          onChanged: (values) {
+            setState(() {
+              _minPrice = values.start;
+              _maxPrice = values.end;
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDistanceFilter(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Distance (km)',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 12),
+        Slider(
+          value: _distance,
+          min: 5,
+          max: 100,
+          divisions: 19,
+          label: '${_distance.toStringAsFixed(0)} km',
+          onChanged: (value) {
+            setState(() {
+              _distance = value;
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRatingFilter(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Minimum Seller Rating',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: Slider(
+                value: _minRating,
+                min: 0,
+                max: 5,
+                divisions: 10,
+                label: _minRating.toStringAsFixed(1),
+                onChanged: (value) {
+                  setState(() {
+                    _minRating = value;
+                  });
+                },
+              ),
+            ),
+            SizedBox(
+              width: 60,
+              child: Text(
+                _minRating.toStringAsFixed(1),
+                style: Theme.of(context).textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAvailabilityFilter(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Availability',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 12),
+        SegmentedButton<String?>(
+          segments: const [
+            ButtonSegment(value: 'inStock', label: Text('In Stock')),
+            ButtonSegment(value: 'outOfStock', label: Text('Out of Stock')),
+            ButtonSegment(value: null, label: Text('All')),
+          ],
+          selected: {_availability},
+          onSelectionChanged: (Set<String?> selected) {
+            setState(() {
+              _availability = selected.first;
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSortOptions(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Sort By',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 12),
+        SegmentedButton<String?>(
+          segments: const [
+            ButtonSegment(value: null, label: Text('Relevance')),
+            ButtonSegment(value: 'newest', label: Text('Newest')),
+            ButtonSegment(value: 'price_asc', label: Text('Price ↑')),
+            ButtonSegment(value: 'price_desc', label: Text('Price ↓')),
+            ButtonSegment(value: 'distance', label: Text('Distance')),
+            ButtonSegment(value: 'rating', label: Text('Rating')),
+          ],
+          selected: {_sortBy},
+          onSelectionChanged: (Set<String?> selected) {
+            setState(() {
+              _sortBy = selected.first;
+            });
+          },
+        ),
+      ],
+    );
   }
 }

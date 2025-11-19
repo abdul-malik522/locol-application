@@ -67,7 +67,7 @@ class MessageBubble extends ConsumerWidget {
                 isSentByMe: isSentByMe,
               )
             else if (message.isLocationMessage && message.latitude != null && message.longitude != null)
-              _buildLocationMessage(context, message)
+              _buildLocationMessage(context, ref, message)
             else if (message.isTextMessage && message.text != null)
               _buildHighlightedText(
                 context,
@@ -77,7 +77,7 @@ class MessageBubble extends ConsumerWidget {
             else if (message.isOrderMessage)
               _buildOrderMessage(context)
             else if (message.isPriceOfferMessage && message.priceOfferData != null)
-              _buildPriceOfferMessage(context, ref),
+              _buildPriceOfferMessage(context, ref)
             const SizedBox(height: 4),
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -659,7 +659,7 @@ class MessageBubble extends ConsumerWidget {
     );
   }
 
-  Widget _buildLocationMessage(BuildContext context, MessageModel message) {
+  Widget _buildLocationMessage(BuildContext context, WidgetRef ref, MessageModel message) {
     final lat = message.latitude!;
     final lng = message.longitude!;
     final locationName = message.locationName ?? 'Shared Location';

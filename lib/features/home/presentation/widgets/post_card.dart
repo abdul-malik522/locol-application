@@ -34,7 +34,7 @@ class PostCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(context),
+            _buildHeader(context, ref),
             _buildImageCarousel(context),
             _buildContent(context),
             _buildActions(context, ref, isRestaurantViewingSeller),
@@ -44,7 +44,7 @@ class PostCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Row(
