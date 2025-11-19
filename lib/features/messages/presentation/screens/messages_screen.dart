@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:go_router/go_router.dart';
+import 'package:localtrade/core/constants/app_constants.dart';
 import 'package:localtrade/core/widgets/cached_image.dart';
 import 'package:localtrade/core/widgets/custom_app_bar.dart';
 import 'package:localtrade/core/widgets/empty_state.dart';

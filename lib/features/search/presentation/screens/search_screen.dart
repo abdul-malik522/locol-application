@@ -295,11 +295,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 },
               ),
             ),
-          if (searchState.sortBy != null)
+          if (state.sortBy != null)
             Padding(
               padding: const EdgeInsets.only(right: 8),
               child: Chip(
-                label: Text(_getSortLabel(searchState.sortBy!)),
+                label: Text(_getSortLabel(state.sortBy!)),
                 onDeleted: () {
                   ref.read(searchProvider.notifier).setSortBy(null);
                 },

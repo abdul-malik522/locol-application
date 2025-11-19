@@ -70,6 +70,7 @@ class MessageBubble extends ConsumerWidget {
               _buildLocationMessage(context, message)
             else if (message.isTextMessage && message.text != null)
               _buildHighlightedText(
+                context,
                 message.text!,
                 isSentByMe,
               )
@@ -926,7 +927,7 @@ class MessageBubble extends ConsumerWidget {
     );
   }
 
-  Widget _buildHighlightedText(String text, bool isSentByMe) {
+  Widget _buildHighlightedText(BuildContext context, String text, bool isSentByMe) {
     if (searchQuery == null || searchQuery!.isEmpty) {
       return Text(
         text,
