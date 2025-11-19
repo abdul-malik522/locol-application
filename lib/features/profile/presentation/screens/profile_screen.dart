@@ -397,9 +397,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Expanded(
                 child: CustomButton(
                   text: 'Share Profile',
-                  onPressed: currentUser != null
-                      ? () => _showShareDialog(context, currentUser!)
-                      : null,
+                  onPressed: () => _showShareDialog(context, currentUser),
                   variant: CustomButtonVariant.outlined,
                 ),
               ),

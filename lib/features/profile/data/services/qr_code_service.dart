@@ -1,3 +1,4 @@
+import 'package:localtrade/core/constants/app_constants.dart';
 import 'package:localtrade/features/auth/data/models/user_model.dart';
 
 class QRCodeService {

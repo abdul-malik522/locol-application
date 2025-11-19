@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:localtrade/core/constants/app_constants.dart';
 import 'package:localtrade/features/auth/data/models/user_model.dart';
 
 enum SharePlatform {

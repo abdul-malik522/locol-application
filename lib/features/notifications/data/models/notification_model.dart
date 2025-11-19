@@ -128,3 +128,62 @@ class NotificationModel {
   }
 }
 
+extension NotificationTypeX on NotificationType {
+  IconData get icon {
+    switch (this) {
+      case NotificationType.like:
+        return Icons.favorite;
+      case NotificationType.comment:
+        return Icons.comment;
+      case NotificationType.order:
+        return Icons.shopping_bag;
+      case NotificationType.message:
+        return Icons.chat_bubble;
+      case NotificationType.system:
+        return Icons.notifications;
+      case NotificationType.follow:
+        return Icons.person_add;
+      case NotificationType.review:
+        return Icons.star;
+    }
+  }
+
+  Color get color {
+    switch (this) {
+      case NotificationType.like:
+        return Colors.red;
+      case NotificationType.comment:
+        return Colors.blue;
+      case NotificationType.order:
+        return Colors.green;
+      case NotificationType.message:
+        return Colors.purple;
+      case NotificationType.system:
+        return Colors.orange;
+      case NotificationType.follow:
+        return Colors.teal;
+      case NotificationType.review:
+        return Colors.amber;
+    }
+  }
+
+  String get label {
+    switch (this) {
+      case NotificationType.like:
+        return 'Likes';
+      case NotificationType.comment:
+        return 'Comments';
+      case NotificationType.order:
+        return 'Orders';
+      case NotificationType.message:
+        return 'Messages';
+      case NotificationType.system:
+        return 'System';
+      case NotificationType.follow:
+        return 'Follows';
+      case NotificationType.review:
+        return 'Reviews';
+    }
+  }
+}
+

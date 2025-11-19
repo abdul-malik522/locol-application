@@ -11,6 +11,7 @@ import 'package:localtrade/core/widgets/error_view.dart';
 import 'package:localtrade/core/widgets/loading_indicator.dart';
 import 'package:localtrade/features/orders/data/datasources/disputes_datasource.dart';
 import 'package:localtrade/features/orders/data/models/dispute_model.dart';
+import 'package:localtrade/features/orders/providers/orders_provider.dart';
 
 class DisputeResolutionScreen extends ConsumerWidget {
   const DisputeResolutionScreen({super.key});

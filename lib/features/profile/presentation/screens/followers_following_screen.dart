@@ -240,10 +240,6 @@ class _FollowersFollowingScreenState
                             ),
                             variant: CustomButtonVariant.outlined,
                             icon: Icons.person_add_outlined,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
                           ),
                         ),
                       )
