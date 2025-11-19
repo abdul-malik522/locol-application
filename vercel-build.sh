@@ -58,7 +58,17 @@ flutter pub get
 
 # Build for web with optimizations
 echo "🏗️  Building Flutter web app (release mode)..."
-flutter build web --release
+flutter build web --release --base-href="/"
 
 echo "✅ Build complete! Output in build/web"
+echo "📂 Verifying build output..."
+if [ ! -f "build/web/index.html" ]; then
+  echo "❌ Error: build/web/index.html not found!"
+  exit 1
+fi
+if [ ! -f "build/web/main.dart.js" ]; then
+  echo "❌ Error: build/web/main.dart.js not found!"
+  exit 1
+fi
+echo "✅ Build output verified"
 

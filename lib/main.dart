@@ -9,21 +9,43 @@ import 'package:localtrade/app/app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SharedPreferences.getInstance();
+  
+  // Initialize SharedPreferences with error handling
+  try {
+    await SharedPreferences.getInstance();
+  } catch (e) {
+    debugPrint('Failed to initialize SharedPreferences: $e');
+    // Continue anyway - SharedPreferences will be initialized lazily when needed
+  }
 
+  // Set up error handling
   FlutterError.onError = (details) {
-    Zone.current.handleUncaughtError(details.exception, details.stack ?? StackTrace.current);
+    FlutterError.presentError(details);
+    debugPrint('Flutter Error: ${details.exception}');
+    debugPrint('Stack trace: ${details.stack}');
   };
 
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
+  // Set up zone error handling
+  runZoned(
+    () {
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          systemNavigationBarColor: Colors.white,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
+      );
+
+      runApp(const ProviderScope(child: App()));
+    },
+    zoneSpecification: ZoneSpecification(
+      handleUncaughtError: (self, parent, zone, error, stackTrace) {
+        debugPrint('Uncaught error in zone: $error');
+        debugPrint('Stack trace: $stackTrace');
+        parent.handleUncaughtError(zone, error, stackTrace);
+      },
     ),
   );
-
-  runApp(const ProviderScope(child: App()));
 }
 
