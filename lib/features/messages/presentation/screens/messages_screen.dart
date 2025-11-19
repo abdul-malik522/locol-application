@@ -143,7 +143,6 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
       },
     );
   }
-}
 
   Future<void> _showUserSearchDialog(BuildContext context) async {
     final searchController = TextEditingController();

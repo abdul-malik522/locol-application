@@ -924,7 +924,6 @@ class _FilterBottomSheetState extends ConsumerState<_FilterBottomSheet> {
       ],
     );
   }
-}
 
   Widget _buildSearchTypeTabs(BuildContext context, SearchState state) {
     return Container(

@@ -312,47 +312,6 @@ class NotificationChannelSettings {
   }
 }
 
-// Extension for NotificationType to add display properties
-extension NotificationTypeExtension on NotificationType {
-  String get label {
-    switch (this) {
-      case NotificationType.like:
-        return 'Likes';
-      case NotificationType.comment:
-        return 'Comments';
-      case NotificationType.order:
-        return 'Orders';
-      case NotificationType.message:
-        return 'Messages';
-      case NotificationType.system:
-        return 'System';
-      case NotificationType.follow:
-        return 'Follows';
-      case NotificationType.review:
-        return 'Reviews';
-    }
-  }
-
-  Color get color {
-    switch (this) {
-      case NotificationType.like:
-        return Colors.red;
-      case NotificationType.comment:
-        return Colors.blue;
-      case NotificationType.order:
-        return Colors.green;
-      case NotificationType.message:
-        return Colors.purple;
-      case NotificationType.system:
-        return Colors.orange;
-      case NotificationType.follow:
-        return Colors.teal;
-      case NotificationType.review:
-        return Colors.amber;
-    }
-  }
-}
-
 // Additional notification types for settings (not in main enum yet)
 enum ExtendedNotificationType {
   follow('Follows', Icons.person_add, Colors.teal),

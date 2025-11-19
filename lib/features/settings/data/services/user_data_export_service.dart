@@ -144,24 +144,24 @@ class UserDataExportService {
     return {
       'exportDate': DateTime.now().toIso8601String(),
       'profile': user.toJson(),
-      'posts': results[0],
-      'orders': results[1],
-      'chats': results[2],
-      'reviewsReceived': results[3]['received'],
-      'reviewsGiven': results[3]['given'],
-      'favorites': results[4],
-      'drafts': results[5],
-      'savedSearches': results[6],
-      'following': results[7]['following'],
-      'followers': results[7]['followers'],
-      'blockedUsers': results[8],
-      'notificationSettings': results[9]['notifications'],
-      'privacySettings': results[9]['privacy'],
-      'orderTemplates': results[10],
-      'deliveryAddresses': results[11],
-      'disputes': results[12],
-      'reportsFiled': results[13]['filed'],
-      'reportsReceived': results[13]['received'],
+      'posts': results[0] as List<Map<String, dynamic>>,
+      'orders': results[1] as List<Map<String, dynamic>>,
+      'chats': results[2] as List<Map<String, dynamic>>,
+      'reviewsReceived': (results[3] as Map<String, dynamic>)['received'] as List<Map<String, dynamic>>,
+      'reviewsGiven': (results[3] as Map<String, dynamic>)['given'] as List<Map<String, dynamic>>,
+      'favorites': results[4] as List<String>,
+      'drafts': results[5] as List<Map<String, dynamic>>,
+      'savedSearches': results[6] as List<Map<String, dynamic>>,
+      'following': (results[7] as Map<String, dynamic>)['following'] as List<String>,
+      'followers': (results[7] as Map<String, dynamic>)['followers'] as List<String>,
+      'blockedUsers': results[8] as List<String>,
+      'notificationSettings': (results[9] as Map<String, dynamic>)['notifications'] as Map<String, dynamic>,
+      'privacySettings': (results[9] as Map<String, dynamic>)['privacy'] as Map<String, dynamic>,
+      'orderTemplates': results[10] as List<Map<String, dynamic>>,
+      'deliveryAddresses': results[11] as List<Map<String, dynamic>>,
+      'disputes': results[12] as List<Map<String, dynamic>>,
+      'reportsFiled': (results[13] as Map<String, dynamic>)['filed'] as List<Map<String, dynamic>>,
+      'reportsReceived': (results[13] as Map<String, dynamic>)['received'] as List<Map<String, dynamic>>,
     };
   }
 
@@ -223,8 +223,8 @@ class UserDataExportService {
     final followers = await FollowsDataSource.instance.getFollowers(userId);
     
     return {
-      'following': following.map((f) => f.toJson()).toList(),
-      'followers': followers.map((f) => f.toJson()).toList(),
+      'following': following,
+      'followers': followers,
     };
   }
 

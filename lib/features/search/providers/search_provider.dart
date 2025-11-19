@@ -248,29 +248,6 @@ class SearchNotifier extends StateNotifier<SearchState> {
     state = state.copyWith(recentSearches: []);
   }
 
-  @override
-  void dispose() {
-    _debounceTimer?.cancel();
-    super.dispose();
-  }
-}
-
-final searchProvider = StateNotifierProvider<SearchNotifier, SearchState>((ref) {
-  final dataSource = ref.watch(searchMockDataSourceProvider);
-  final userId = ref.watch(currentUserProvider)?.id;
-  return SearchNotifier(dataSource, userId);
-});
-
-final searchResultsProvider = Provider<List<PostModel>>((ref) {
-  return ref.watch(searchProvider).results;
-});
-
-final hasActiveFiltersProvider = Provider<bool>((ref) {
-  final filters = ref.watch(searchProvider).filters;
-  return filters.isNotEmpty;
-});
-
-
   /// Load saved searches
   Future<void> loadSavedSearches() async {
     if (_userId == null) return;
@@ -318,4 +295,25 @@ final hasActiveFiltersProvider = Provider<bool>((ref) {
     );
     await search(savedSearch.query);
   }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
 }
+
+final searchProvider = StateNotifierProvider<SearchNotifier, SearchState>((ref) {
+  final dataSource = ref.watch(searchMockDataSourceProvider);
+  final userId = ref.watch(currentUserProvider)?.id;
+  return SearchNotifier(dataSource, userId);
+});
+
+final searchResultsProvider = Provider<List<PostModel>>((ref) {
+  return ref.watch(searchProvider).results;
+});
+
+final hasActiveFiltersProvider = Provider<bool>((ref) {
+  final filters = ref.watch(searchProvider).filters;
+  return filters.isNotEmpty;
+});
