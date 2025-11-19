@@ -6,6 +6,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
 
+import 'package:localtrade/core/constants/app_constants.dart';
 import 'package:localtrade/features/orders/data/models/order_model.dart';
 
 class OrderReceiptService {

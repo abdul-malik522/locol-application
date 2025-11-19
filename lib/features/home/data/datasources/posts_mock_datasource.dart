@@ -649,10 +649,6 @@ class PostsMockDataSource {
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
   }
 
-  /// Get all posts including archived (for internal use)
-  List<PostModel> getAllPosts() {
-    return List<PostModel>.from(_posts);
-  }
 
   Future<PostModel> updatePost(PostModel updatedPost) async {
     await Future.delayed(const Duration(milliseconds: 500));

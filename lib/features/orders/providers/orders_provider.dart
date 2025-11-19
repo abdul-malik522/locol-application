@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:localtrade/core/constants/app_constants.dart';
+import 'package:localtrade/features/auth/providers/auth_provider.dart';
 import 'package:localtrade/features/orders/data/datasources/delivery_addresses_datasource.dart';
 import 'package:localtrade/features/orders/data/datasources/disputes_datasource.dart';
 import 'package:localtrade/features/orders/data/datasources/orders_mock_datasource.dart';

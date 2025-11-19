@@ -23,6 +23,7 @@ class SearchState {
     this.recentSearches = const [],
     this.searchType = SearchType.posts,
     this.showSuggestions = false,
+    this.sortBy,
   });
 
   final String query;

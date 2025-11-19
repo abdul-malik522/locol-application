@@ -112,7 +112,8 @@ class NotificationSettingsModel {
     this.followNotifications = const NotificationChannelSettings(),
     this.reviewNotifications = const NotificationChannelSettings(),
     DateTime? updatedAt,
-  }) : updatedAt = updatedAt ?? DateTime.now();
+  })  : quietHours = quietHours ?? QuietHoursModel(),
+        updatedAt = updatedAt ?? DateTime.now();
 
   final String userId;
   final bool enableAll; // Master toggle for all notifications

@@ -89,6 +89,8 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
             heading: 0,
             speed: 0,
             speedAccuracy: 0,
+            altitudeAccuracy: 0,
+            headingAccuracy: 0,
           );
         }
         // Load images from draft paths (if files still exist)
@@ -96,12 +98,14 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
           final existingImages = <File>[];
           for (final path in currentDraft.imagePaths) {
             final file = File(path);
-            if (await file.exists()) {
+            if (file.existsSync()) {
               existingImages.add(file);
             }
           }
           if (existingImages.isNotEmpty) {
-            _selectedImages = existingImages;
+            setState(() {
+              _selectedImages = existingImages;
+            });
           }
         }
       });
@@ -295,6 +299,16 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
           .map((img) => 'https://picsum.photos/400/300?random=${DateTime.now().millisecondsSinceEpoch + _selectedImages.indexOf(img)}')
           .toList();
 
+      final currentUser = ref.read(currentUserProvider);
+      if (currentUser == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User not authenticated')),
+          );
+        }
+        return;
+      }
+
       final postType = currentUser.isSeller ? PostType.product : PostType.request;
 
       final post = PostModel(
@@ -325,7 +339,6 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
       await ref.read(postsProvider.notifier).createPost(post);
 
       // Clear draft after successful post creation
-      final currentUser = ref.read(currentUserProvider);
       if (currentUser != null) {
         final draftsNotifier = ref.read(draftsProvider(currentUser.id).notifier);
         if (_currentDraftId != null) {

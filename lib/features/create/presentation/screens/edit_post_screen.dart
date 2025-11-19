@@ -64,31 +64,35 @@ class _EditPostScreenState extends ConsumerState<EditPostScreen> {
   }
 
   Future<void> _loadPost() async {
-    final post = ref.read(postByIdProvider(widget.postId));
-    if (post != null) {
-      setState(() {
-        _originalPost = post;
-        _titleController.text = post.title;
-        _descriptionController.text = post.description;
-        _priceController.text = post.price?.toString() ?? '';
-        _quantityController.text = post.quantity ?? '';
-        _selectedCategory = post.category;
-        _existingImageUrls = List.from(post.imageUrls);
-        _location = post.location;
-        _position = Position(
-          latitude: post.latitude,
-          longitude: post.longitude,
-          timestamp: DateTime.now(),
-          accuracy: 0,
-          altitude: 0,
-          heading: 0,
-          speed: 0,
-          speedAccuracy: 0,
-        );
-        _hasExpiration = post.expiresAt != null;
-        _expirationDateTime = post.expiresAt;
-      });
-    }
+    final postAsync = ref.read(postByIdProvider(widget.postId));
+    postAsync.whenData((post) {
+      if (post != null && mounted) {
+        setState(() {
+          _originalPost = post;
+          _titleController.text = post.title;
+          _descriptionController.text = post.description;
+          _priceController.text = post.price?.toString() ?? '';
+          _quantityController.text = post.quantity ?? '';
+          _selectedCategory = post.category;
+          _existingImageUrls = List.from(post.imageUrls);
+          _location = post.location;
+          _position = Position(
+            latitude: post.latitude,
+            longitude: post.longitude,
+            timestamp: DateTime.now(),
+            accuracy: 0,
+            altitude: 0,
+            heading: 0,
+            speed: 0,
+            speedAccuracy: 0,
+            altitudeAccuracy: 0,
+            headingAccuracy: 0,
+          );
+          _hasExpiration = post.expiresAt != null;
+          _expirationDateTime = post.expiresAt;
+        });
+      }
+    });
   }
 
   Future<void> _pickImages() async {
@@ -253,28 +257,30 @@ class _EditPostScreenState extends ConsumerState<EditPostScreen> {
   @override
   Widget build(BuildContext context) {
     final currentUser = ref.watch(currentUserProvider);
-    final post = ref.watch(postByIdProvider(widget.postId));
+    final postAsync = ref.watch(postByIdProvider(widget.postId));
 
-    if (post == null) {
-      return const Scaffold(
-        appBar: CustomAppBar(title: 'Edit Post'),
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
+    return postAsync.when(
+      data: (post) {
+        if (post == null) {
+          return const Scaffold(
+            appBar: CustomAppBar(title: 'Edit Post'),
+            body: Center(child: Text('Post not found')),
+          );
+        }
 
-    // Check if user owns the post
-    if (currentUser?.id != post.userId) {
-      return Scaffold(
-        appBar: const CustomAppBar(title: 'Edit Post'),
-        body: const Center(
-          child: Text('You can only edit your own posts'),
-        ),
-      );
-    }
+        // Check if user owns the post
+        if (currentUser?.id != post.userId) {
+          return Scaffold(
+            appBar: const CustomAppBar(title: 'Edit Post'),
+            body: const Center(
+              child: Text('You can only edit your own posts'),
+            ),
+          );
+        }
 
-    final isSeller = post.postType == PostType.product;
+        final isSeller = post.postType == PostType.product;
 
-    return Scaffold(
+        return Scaffold(
       appBar: CustomAppBar(
         title: 'Edit Post',
         actions: [
@@ -741,5 +747,15 @@ class _EditPostScreenState extends ConsumerState<EditPostScreen> {
     final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
     return '$displayHour:$minute $period';
   }
-}
+      },
+      loading: () => const Scaffold(
+        appBar: CustomAppBar(title: 'Edit Post'),
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, stack) => Scaffold(
+        appBar: const CustomAppBar(title: 'Edit Post'),
+        body: Center(child: Text('Error loading post: $error')),
+      ),
+    );
+  }
 
