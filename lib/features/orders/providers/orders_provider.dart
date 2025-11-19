@@ -314,3 +314,8 @@ final disputeByOrderIdProvider = FutureProvider.family<DisputeModel?, String>((r
   return await dataSource.getDisputeByOrderId(orderId);
 });
 
+final allDisputesProvider = FutureProvider<List<DisputeModel>>((ref) async {
+  final dataSource = ref.watch(disputesDataSourceProvider);
+  return await dataSource.getAllDisputes();
+});
+
