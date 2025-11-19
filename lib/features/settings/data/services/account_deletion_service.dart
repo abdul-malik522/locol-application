@@ -82,7 +82,7 @@ class AccountDeletionService {
   Future<void> _deleteUserFavorites(String userId) async {
     final favorites = await FavoritesDataSource.instance.getFavoritePostIds(userId);
     for (final postId in favorites) {
-      await FavoritesDataSource.instance.removeFavorite(userId, postId);
+      await FavoritesDataSource.instance.removeFromFavorites(userId, postId);
     }
   }
 
@@ -92,8 +92,11 @@ class AccountDeletionService {
     for (final draft in drafts) {
       await DraftsDataSource.instance.deleteDraft(draft.id);
     }
-    // Also clear current draft
-    await DraftsDataSource.instance.clearCurrentDraft();
+    // Also clear current draft (if it belongs to this user)
+    final currentDraft = await DraftsDataSource.instance.getCurrentDraft(userId);
+    if (currentDraft != null) {
+      await DraftsDataSource.instance.clearCurrentDraft();
+    }
   }
 
   /// Delete all saved searches for the user
@@ -108,14 +111,14 @@ class AccountDeletionService {
   Future<void> _deleteUserFollows(String userId) async {
     // Unfollow all users this user is following
     final following = await FollowsDataSource.instance.getFollowing(userId);
-    for (final follow in following) {
-      await FollowsDataSource.instance.unfollowUser(userId, follow.followingId);
+    for (final followingId in following) {
+      await FollowsDataSource.instance.unfollowUser(userId, followingId);
     }
 
     // Remove this user from all followers' following lists
     final followers = await FollowsDataSource.instance.getFollowers(userId);
-    for (final follow in followers) {
-      await FollowsDataSource.instance.unfollowUser(follow.followerId, userId);
+    for (final followerId in followers) {
+      await FollowsDataSource.instance.unfollowUser(followerId, userId);
     }
   }
 
@@ -169,7 +172,7 @@ class AccountDeletionService {
   Future<void> _deleteUserNotifications(String userId) async {
     final notifications = await NotificationsMockDataSource.instance.getNotifications(userId);
     for (final notification in notifications) {
-      await NotificationsMockDataSource.instance.deleteNotification(notification.id, userId);
+      await NotificationsMockDataSource.instance.deleteNotification(notification.id);
     }
   }
 }
